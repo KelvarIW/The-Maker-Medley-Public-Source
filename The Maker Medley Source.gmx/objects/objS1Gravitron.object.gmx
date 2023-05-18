@@ -122,7 +122,6 @@ alarm[0] = 28;
 for(i=0;i&lt;15;i++;){
     instance_create(coinCoord[i, 0], coinCoord[i, 1], objMakerCoin);
 }
-scrIdentRoom();
 active = true;
 </string>
           </argument>

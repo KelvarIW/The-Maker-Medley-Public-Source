@@ -130,8 +130,9 @@ repeat(_partNum){
           <argument>
             <kind>1</kind>
             <string>if (circleDir &lt; 810){
-    xCenter -= 0.3;
-    circleDir += 90/39;
+    var _adjust = 1.2;  // tweaking animation for v1.2.3
+    xCenter -= 0.3  *_adjust;
+    circleDir += 90/39  *_adjust;
     if (circleDir &gt;= 810){
         circleDir = 810;
         hspeed = -4; //x - xprevious

@@ -130,21 +130,25 @@ switch(phase){
     case 1:
         bkFade = 1;
         bkAlpha = 0;
-        with(objGeezerBlock){
+        var _t = 0;
+        with(objGeezerBlockMulti){
             blockSprite = sprGeezerVovkaTiles;
-            if ((x == 0 || x == 768) &amp;&amp; (y == 384 || y == 576)){
-                if (y == 384){
-                    blockIndex = 0;
-                }else if (y == 576){
-                    if (x &lt; 400)
-                        blockIndex = 3;
-                    else
-                        blockIndex = 4;
+            if (x == 0 || x == 768){
+                blockIndexArr[0, 0] = 0;
+                _t = (576-y) div 32;  // `j` value of connector
+                if (x == 0){
+                    blockIndexArr[0, _t] = 3;
+                }else{
+                    blockIndexArr[0, _t] = 34;
                 }
-            }else if (y == 576){
-                blockIndex = 1;
+                for (var j=(image_yscale-1); j&gt;=0; j--;){
+                    if (j == 0 || j == _t){continue;}
+                    blockIndexArr[0, j] = 2;
+                }
             }else{
-                blockIndex = 2;
+                for (var i=(image_xscale-1); i&gt;=0; i--;){
+                    blockIndexArr[i, 0] = 1;
+                }
             }
             blockAlphaMult = 0;
             blockFade = 1;

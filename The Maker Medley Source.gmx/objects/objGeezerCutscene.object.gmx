@@ -3,7 +3,7 @@
   <spriteName>sprCamera</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>-4</depth>
   <persistent>-1</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -29,11 +29,16 @@
 playerX = 400;
 playerY = 349;
 playerXscale = 1;
-timer = 0;
 playerIndex = 0;
 dialogue = 0;
 
+timer = 0;
+introTime = 0;
+
 falling = true;
+introDelay = 132;
+introLen = 928;
+introBGM = noone;
 dialogueBox = noone;
 
 skipping = false;
@@ -59,7 +64,9 @@ skipping = false;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>global.canRestart = true;
+            <string>event_perform(ev_other, ev_room_end);
+
+// place player, save
 instance_create(400, 567, objPlayer);
 scrSaveGame(true);
 with (objGeezerBoss){
@@ -106,16 +113,14 @@ with (objGeezerVirus){
 //Manage music
 //Stop Stage 2 BGM if necessary
 with (objWorld){
-    if (musicToPlay == -2 || musicToPlay == global.BGMStage2b){
-        musicToPlay = -1;
+    audio_stop_sound(global.BGMStage2b);
+    audio_stop_sound(global.BGMBoss2Intro);
+    
+    if (!audio_is_playing(global.BGMBoss2a) &amp;&amp; !global.muteMusic){
+        global.currentMusicID = -1;
+        audio_stop_sound(global.currentMusic);
+        musicToPlay = global.BGMBoss2a;
     }
-}
-audio_stop_sound(global.BGMStage2b);
-
-if (!audio_is_playing(global.BGMBoss2a) &amp;&amp; !global.muteMusic){
-    global.currentMusicID = -1;
-    audio_stop_sound(global.currentMusic);
-    musicToPlay = global.BGMBoss2a;
 }
 
 //end cutscene state
@@ -207,7 +212,7 @@ with (objGeezerBoss) alarm[1] = 60; //turnOn
         falling = false;
         instance_create(0, 0, objMakerCutsceneSkip);
         audio_play_sound(sndMakerKidLand, 0, 0);
-        alarm[1] = 132;
+        alarm[1] = introDelay;
     }
 }else{
     timer ++;
@@ -236,6 +241,37 @@ with (objGeezerBoss) alarm[1] = 60; //turnOn
         
         skipping = true;
     }
+    
+    introTime = (timer - introDelay);
+    if (!global.muteMusic){
+        var _buffer = 2;  // leniency before correcting audio position
+        if (introTime &gt;= 0 &amp;&amp; introTime &lt; (introLen - _buffer)){
+            if (!audio_exists(introBGM)){
+                // clear objWorld music
+                with (objWorld){
+                    if (global.musicFading != -1){
+                        audio_stop_sound(global.musicFading);
+                        global.musicFading = -1;
+                    }
+                    musicToPlay = -2;  // objWorld should not interfere with cutscene's BGM
+                }
+                global.currentMusicID = -4;
+                introBGM = scrPlayMusic(global.BGMBoss2Intro, 0, true);
+            }
+            if (audio_exists(introBGM)){
+                var _fps = 50;
+                var _pos = (audio_sound_get_track_position(introBGM)*_fps);
+                var _target = introTime;
+                var _diff = abs(_target - _pos);
+                if (_diff &gt; _buffer){
+                    audio_sound_set_track_position(introBGM, _target/_fps);
+                }
+            }
+        }
+    }else{
+        audio_stop_sound(introBGM);
+        introBGM = -4;
+    }
 }
 x = playerX;
 y = playerY;
@@ -262,6 +298,7 @@ y = playerY;
           <argument>
             <kind>1</kind>
             <string>global.canRestart = true;
+audio_stop_sound(introBGM);
 </string>
           </argument>
         </arguments>
@@ -285,7 +322,7 @@ y = playerY;
           <argument>
             <kind>1</kind>
             <string>if (room != rGeezer01){
-    instance_destroy();
+    instance_destroy(id, false);
 }else{
     global.farthestRoom = max(global.farthestRoom, scrGetRoomNum(room));        
     scrSaveGame(true);
@@ -317,6 +354,14 @@ y = playerY;
 }else{
     draw_sprite_ext(sprPlayerIdle, global.count/5, playerX, 567, playerXscale, 1, 0, c_white, 1);
 }
+
+/* // debug info - introTime, objWorld.musicToPlay
+draw_set_font(fGameOver);
+draw_set_color(c_white);
+draw_text(view_xview + 102, view_yview + 188, string(introTime));
+if (instance_exists(objWorld)){
+    draw_text(view_xview + 102, view_yview + 240, "objWorld.musicToPlay:  " + string(objWorld.musicToPlay));
+}*/
 </string>
           </argument>
         </arguments>

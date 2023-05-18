@@ -62,23 +62,10 @@ snd = audio_play_sound(sndPlantsGrow, 0, 0);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>scrPlantsPlantStepEnd(false);
-
-if (!frozen &amp;&amp; dead &amp;&amp; !crushed){ //see if we can destroy the plant (we can if there is no gore to draw, unless it was crushed)
-    var _die;
-    _die = true;
-    for(var i=0;i&lt;goreAmt;i++){
-        if (instance_exists(gore[i])){
-            _die = false;
-        }
-    }
-    if (_die){
-        moundAlpha -= 0.08;
-        if (moundAlpha &lt;= 0){
-            instance_destroy();
-        }
-    }
+            <string>if (!frozen &amp;&amp; dead &amp;&amp; !instance_exists(gore[1]) &amp;&amp; moundAlpha &gt; 0){  // gore[1] = pillar
+    moundAlpha -= 0.08;
 }
+scrPlantsPlantStepEnd((moundAlpha &lt;= 0));
 </string>
           </argument>
         </arguments>
@@ -110,7 +97,7 @@ if (!frozen &amp;&amp; dead &amp;&amp; !crushed){ //see if we can destroy the pl
                 if (shootDelay &lt;= 0){
                     kickbackSine = pi;
                     shootDelay = 70;
-                    with (instance_create(x-8*sin(kickbackSine), y - 3*sin(animTime*pi/60), objPlantsProjectile)){
+                    with (instance_create(x-14*sin(kickbackSine), y - 3*sin(animTime*pi/60), objPlantsProjectile)){
                         projType = 1;
                         row = other.row;
                         xstart = other.x;
@@ -143,6 +130,7 @@ if (!frozen &amp;&amp; dead &amp;&amp; !crushed){ //see if we can destroy the pl
                 }
             }else{
                 growingTimer ++;
+                growingTimerHighest = max(growingTimer, growingTimerHighest);
                 if (growingTimer &gt;= 68){
                     growing = false;
                 }
@@ -164,7 +152,7 @@ if (!frozen &amp;&amp; dead &amp;&amp; !crushed){ //see if we can destroy the pl
         }
         moundAlpha -= 0.1;
         if (growingTimer &gt; 32){
-            growingTimer -= 2;
+            growingTimer = max(growingTimer - 1.5, 32);
         }
     }
 }
@@ -319,7 +307,7 @@ event_inherited();
 
 // Calculate Stuff
 var _baseY = (y + 22);
-var _moundMult = clamp((growingTimer-31)/20, 0, 1);
+var _moundMult = clamp((growingTimerHighest-31)/20, 0, 1);
 var _growMult = clamp((growingTimer-38.5)/20, 0, 1);
 var _height = 50;
 var _riseHeight = ceil((_height + idleAnimSine) * _growMult);

@@ -81,7 +81,7 @@ canSkip = true;
             <kind>1</kind>
             <string>lightUp = false;
 animating = false;
-with (objWorld){event_perform(ev_alarm, 2);}
+//with (objWorld){event_perform(ev_alarm, 2);}  // moved to objS2ElevatorKid
 scrIdentRoom();
 </string>
           </argument>
@@ -201,7 +201,7 @@ audio_play_sound(sndS2NANGDing, 0, 0);
     with (objS2ElevatorKid){
         (instance_create(x, y, objPlayer)).image_index = image_index;
         instance_destroy();
-        //global.playElevator = false;
+        global.playElevator = false;
     }
     with (objWorld){event_perform(ev_alarm, 2);}
     openAmt = 0;

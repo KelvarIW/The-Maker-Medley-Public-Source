@@ -71,21 +71,25 @@ if (!frozen){
         }
         if (place_meeting(x, y, objPlantsEnemy)){
             var _armed = (!growing  ||  (growingTimer &gt;= growingLen-5))  // 5 frames of forgiveness  &lt;3
-            var _trigger = false;
-            with (objPlantsEnemy){
-                if (row == other.row &amp;&amp; !scrPlantsEnemyAirborne() &amp;&amp; !dead &amp;&amp; collision_rectangle(other.x - 28, other.y - 32, other.x + 16, other.y + 32, id, true, false) == id){
-                    _trigger = true;
-                    break;
-                    // Killing is handled by separate object
+            if (_armed){
+                // 1.2.3 change, activators will not disappear if an enemy walks over them while unarmed
+                // this is to make it easier for players to understand how the plant works
+                var _trigger = false;
+                with (objPlantsEnemy){
+                    if (row == other.row &amp;&amp; !scrPlantsEnemyAirborne() &amp;&amp; !dead &amp;&amp; collision_rectangle(other.x - 28, other.y - 32, other.x + 16, other.y + 32, id, true, false) == id){
+                        _trigger = true;
+                        break;
+                        // Killing is handled by separate object
+                    }
                 }
-            }
-            if (_trigger){
-                dead = true;
-                if (_armed){
-                    var _snd = audio_play_sound(sndMakerSamplePunch, 0, 0);
-                    audio_sound_pitch(_snd, PITCH_FLUCT);
-                    var _inst = instance_create(x, y, objPlantsActivatorKillEffect);
-                    _inst.row = row;
+                if (_trigger){
+                    dead = true;
+                    if (_armed){
+                        var _snd = audio_play_sound(sndMakerSamplePunch, 0, 0);
+                        audio_sound_pitch(_snd, PITCH_FLUCT);
+                        var _inst = instance_create(x, y, objPlantsActivatorKillEffect);
+                        _inst.row = row;
+                    }
                 }
             }
         }

@@ -222,12 +222,13 @@ if (frozen){
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (!(frozen || collided || other.dead || other.killing || other.row != row || (projType == 1 &amp;&amp; (behind || other.object_index == objPlantsIWBTGSpike)) || (projType == 2 &amp;&amp; !target))){
+            <string>if (!(frozen || collided || other.dead || other.killing || other.row != row || (projType == 1 &amp;&amp; (other.object_index == objPlantsIWBTGSpike)) || (projType == 2 &amp;&amp; !target))){
     event_user(1);
     with (other){
         hpLost = other.projType;
         event_user(1);
     }
+    behind = false;  // type 1
     scrPlantsLimitedSFX(sndMakerCannonball);
 }
 </string>

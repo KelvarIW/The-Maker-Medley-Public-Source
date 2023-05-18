@@ -115,6 +115,7 @@
                 case objS2FlappyCtrl:
                 case objS2FlappyPipe:
                 case objGeezerBlock:
+                case objGeezerBlockMulti:
                 case objS4CherrySine:
                 case objFinalSudnepCtrl:
                 case objClearLobbyDecor:

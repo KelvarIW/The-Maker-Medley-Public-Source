@@ -62,7 +62,7 @@ switch (room){
         }
         break;
     case rFinalBoss_3:
-        alarm[0] = 48;
+        alarm[0] = 8;
         roomNum = 3;
         break;
     case rFinalBoss_4:

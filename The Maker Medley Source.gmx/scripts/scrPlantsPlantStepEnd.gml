@@ -11,7 +11,7 @@ if (argument_count > 0){
     _goreMgmt = true;
 }
 
-if (!frozen){
+if (_goreMgmt && !frozen){
     if (dead && !crushed){
         deathShadowMult = max(deathShadowMult - 0.15, 0);
     }

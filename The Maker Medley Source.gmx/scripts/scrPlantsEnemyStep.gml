@@ -14,13 +14,11 @@ if (!dead && !frozen){
     }
     
     if (inheritAttacking && !killing){
-        if (!instance_exists(attacking) && instance_exists(objPlantsCtrl)){
+        if (!instance_exists(attacking) && scrPlantsEnShouldAttack()){
             var _column = (x-96) div 64;
-            if (_column >= 0 && _column <= 8 && row >= 0 && row <= 5 && objPlantsCtrl.plantGrid[_column, row] != -1 && instance_exists(objPlantsCtrl.plantGrid[_column, row]) && (object_index == objPlantsIWBTGSpike || objPlantsCtrl.plantGrid[_column, row].object_index != objPlantsSpringtrap) && !scrPlantsInvincible((objPlantsCtrl.plantGrid[_column, row]).object_index) && ((x-96) - _column*64) == median(16, ((x-96) - _column*64), 48)){
-                hspeed = 0;
-                attacking = objPlantsCtrl.plantGrid[_column, row];
-                attackingTimer = 0;
-            }
+            hspeed = 0;
+            attacking = objPlantsCtrl.plantGrid[_column, row];
+            attackingTimer = attackingTimerLen;
         }
         if (instance_exists(attacking) && !attacking.dead){
             event_user(3); //attacking

@@ -28,46 +28,81 @@
             <string>event_inherited();
 sprite_index = sprPlantsMikuRun;
 image_speed = 0;
-for(var i=0; i&lt;4; i++){
+for(var i=0; i&lt;4; i++;){
     cherry[i] = noone;
 }
 cherriesLeft = 0;
-hp = 10;
+hp = 14;
 scrPlantsGoreInit(2);
 spawnDelay = 0;
+spawnDelayMin = 336;  // no fruit left
+spawnDelayMain = 440;  // 2 or fewer
+runSpd = 0.635;
+sprintSpd = 2;  // pre-summon
+noSummonDelay = 128;  // after appearing
+noSummonTime = noSummonDelay/sprintSpd;
+
 eatingIndex = 0;
 glowAlpha = 0;
 minDistanceBetweenSpawns = 120;
 snd = -1;
 subimg = 0;
+
 danceTimer = 0;
+danceStart = 90; danceEnd = 150;  // for "pause"
+dancePause = false;
+danceCount = 4; // 4 "flips"
+danceFrame = 0; danceFrameTotal = (sprite_get_number(sprPlantsMikuDance)/2/2);  // /2 -&gt; length of 2 "flips", / 2 -&gt; length of 1 "flip"
+danceLen = (danceEnd - danceStart)/(danceCount);
+danceLoop = 165;
+danceFlip = 1;
+
 activatedOnce = false;
 automaticShadowInputs = false;
 pushWeightMult = 0.8;
 
-//sprite part offsets
+summonPose = false;
+headTilt = 0;
+blinkTimer = 0;  // miku will "blink" (close eyes) when negative; also used to make Miku close her eyes during the summon post
+
+//  BEGIN sprite part offsets  \\
+drawXOff = 0;
+drawYOff = -12;
+// Running
 runBodyX = 0;
 runBodyY = 9;
-runArmX = 1;
+runArmX = -1;
 runArmY = 5;
+runBArmX = runBodyX+(0);
+runBArmY = runBodyY+(-9);
+runBArmTarg = 270;
+runBArmAng = runBArmTarg;
 runHeadX = 0;
-runHeadY = -9;
-runHairX = 11;
-runHairY = -16;
-
+runHeadY = -1;
+runHairX = 9;
+runHairY = -20;
+// Attacking
 eatBodyX = 0;
 eatBodyY = 0;
 eatArmX = 3;
 eatArmY = 6;
 eatHeadX = 0;
 eatHeadY = -7;
-
+// Waiting
 idleBodyX = 0;
 idleBodyY = 0;
 idleArmX = 0;
 idleArmY = 0;
 idleHeadX = 0;
 idleHeadY = 0;
+// Dancing
+danceBodyX = 0;
+danceBodyY = 10;
+danceArmX = 5;
+danceArmY = 5;
+danceHeadX = 0;
+danceHeadY = -13;
+//  END sprite part offsets  \\
 </string>
           </argument>
         </arguments>
@@ -93,6 +128,9 @@ idleHeadY = 0;
             <string>///Resume running
 if (!frozen){
     sprite_index = sprPlantsMikuRun;
+    summonPose = false;
+}else{
+    alarm[1] = 1;
 }
 </string>
           </argument>
@@ -140,6 +178,8 @@ if (!dead  &amp;&amp;  !frozen){
         var snd = audio_play_sound(sndPlantsMiku, 0, 0);
         audio_sound_gain(snd, global.musicLevel/100 * global.volumeLevel/100, 0);
     }*/
+}else{
+    alarm[0] = 1;
 }
 </string>
           </argument>
@@ -164,8 +204,10 @@ if (!dead  &amp;&amp;  !frozen){
           <argument>
             <kind>1</kind>
             <string>if (!frozen){
-    var _attackingPrev = attacking;
+    noSummonTime = max(noSummonTime-1, 0);
+    inheritAttacking = (!summonPose);  // do not attack if summoning
     
+    var _attackingPrev = attacking;
     if (pushAmt &gt; 0){
         if (sprite_index == sprPlantsMikuIdle){
             sprite_index = sprPlantsMikuRun;
@@ -175,32 +217,56 @@ if (!dead  &amp;&amp;  !frozen){
     }
     scrPlantsEnemyStep();
     
-    if (_attackingPrev != attacking){
-        eatingIndex = 0; //reset eating animation
-    }
+    // dance-related variables
+    var _dancePos = -1;
+    // defaults; set here to prevent any state change oddities
+    dancePause = false;
+    danceFlip = 1;
+    danceFrame = 0;
     
     if (activatedOnce){
         danceTimer ++;
-        
-        var _dancePos = (danceTimer mod 165);
-        var _pauseStart = 90;
-        var _pauseEnd = 150;
-        if (!instance_exists(attacking)){
-            if (_dancePos &gt;= _pauseStart &amp;&amp; _dancePos &lt; _pauseEnd){
-                sprite_index = sprPlantsMikuIdle;
-            }else{
-                sprite_index = sprPlantsMikuRun;
+        _dancePos = (danceTimer mod danceLoop);
+        if (!instance_exists(attacking) &amp;&amp; !summonPose){
+            if ((_dancePos &gt;= danceStart &amp;&amp; _dancePos &lt; danceEnd)){
+                dancePause = true;
+                if ((_dancePos &gt;= danceStart &amp;&amp; _dancePos &lt; (danceStart + danceLen)) || (_dancePos &gt;= (danceStart + 2*danceLen) &amp;&amp; _dancePos &lt; (danceStart + 3*danceLen))){
+                    danceFlip = -1;
+                }
+                danceFrame = ((_dancePos - danceStart) mod danceLen)/danceLen * danceFrameTotal;
             }
         }
     }
     
     if (!dead){
-        if (!instance_exists(attacking) &amp;&amp; sprite_index == sprPlantsMikuRun &amp;&amp; pushAmt &lt;= 0){
-            x -= 0.75;
+        if (!instance_exists(attacking) &amp;&amp; (!dancePause &amp;&amp; !summonPose) &amp;&amp; pushAmt &lt;= 0){
+            var _canMove = true;
+            // don't move if it would break the formation
+            var _flex = 36;
+            for(var i=0; i&lt;4; i++;){
+                with (cherry[i]){
+                    if (abs(x - (other.x + mikuXOff)) &lt;= _flex){  // currently in formation
+                        if (instance_exists(attacking) || scrPlantsEnShouldAttack()){  // can't move w/ formation, so formation should wait
+                            _canMove = false;
+                            //show_debug_message("blocked by " + string(attacking) );
+                            break;
+                        }
+                    }
+                }
+            }
+            if (_canMove){
+                if (!activatedOnce){
+                    x -= sprintSpd;
+                }else{
+                    x -= runSpd;
+                }
+                sprite_index = sprPlantsMikuRun;
+            }else{
+                sprite_index = sprPlantsMikuIdle;
+            }
         }
-        
         var _cherries = 0;
-        for(var i=0; i&lt;4; i++){
+        for(var i=0; i&lt;4; i++;){
             with (cherry[i]){
                 if (!dead){
                     _cherries ++;
@@ -208,20 +274,69 @@ if (!dead  &amp;&amp;  !frozen){
             }
         }
         if (spawnDelay &gt; 0){spawnDelay --;}
-        if (spawnDelay &lt;= 0 &amp;&amp; (!activatedOnce || _dancePos == _pauseStart) &amp;&amp; (x &gt;= 352 &amp;&amp; x &lt; 640) &amp;&amp; (_cherries &lt;= 1 || (_cherries &lt;= 2 &amp;&amp; (row != 0 || row != 5)))){ //if row == 0 or 5 one cherry will always be unable to spawn
-            spawnDelay = 420;
-            sprite_index = sprPlantsMikuIdle;
-            alarm[0] = 15;
+        
+        var _presummonDelay = 15;
+        if (noSummonTime &lt;= 0 || (!activatedOnce &amp;&amp; instance_exists(attacking))){  // if blocked, she will summon instantly
+            if (x &gt;= 288 &amp;&amp; pushAmt &lt;= 2 &amp;&amp; (spawnDelay &lt;= 0 || (_cherries &lt;= 1 &amp;&amp; spawnDelay &lt;= spawnDelayMain-spawnDelayMin))){  // x check prevents spawning backups in an unfair position
+                if ((!activatedOnce || _dancePos == danceStart) &amp;&amp; (_cherries &lt;= 1 || (_cherries &lt;= 2 &amp;&amp; (row != 0 || row != 5)))){ // keep sync with other dancers; if row == 0 or 5 one cherry will always be unable to spawn
+                    spawnDelay = spawnDelayMain;
+                    //sprite_index = sprPlantsMikuIdle;
+                    alarm[0] = _presummonDelay;
+                    summonPose = true;
+                    sprite_index = sprPlantsMikuRun;
+                }
+            }
         }
         
+        var _runPeak = 6;
+        var _bodyindex = abs(((floor(subimg) + (_runPeak)) mod (2*_runPeak)) - _runPeak);  // copied from draw event (only relevant if running)
+        // summon pose + head tilt
+        var _tiltMax = 12;  // `_tiltMax` degrees over `_presummonDelay` frames (frame number from `alarm[0] = ...`)
+        if (summonPose){
+            headTilt = min(headTilt + (_tiltMax/_presummonDelay), _tiltMax);
+            runBArmTarg = 210;
+        }else{
+            if (headTilt &gt; 0){
+                headTilt = max(headTilt - (_tiltMax/_presummonDelay), 0);
+            }
+            runBArmTarg = 270 + (-36)*(cos(pi * _bodyindex/_runPeak));
+        }
+        // back arm angle
+        var _inc = 8;
+        var _diff = (runBArmTarg - runBArmAng);
+        if (abs(_diff) &lt; _inc){
+            runBArmAng = runBArmTarg;
+        }else{
+            runBArmAng += _inc*sign(_diff);
+        }
+        
+        // sprite animations
         if (sprite_index == sprPlantsMikuRun){
-            subimg += 0.15;
+            var _inc = true;
+            if (summonPose){
+                // freeze on frames 2, 3, 5, 6
+                if (_bodyindex == 2 || _bodyindex == 3 || _bodyindex == 5 || _bodyindex == 6){
+                    _inc = false;
+                }
+            }
+            if (_inc){
+                subimg += 0.2 * clamp(abs(x - xprevious), runSpd, sprintSpd);
+            }
         }else if (sprite_index == sprPlantsMikuIdle){
             subimg += 0.1;
         }
     }
+    
+    // Blinking, because it's cool
+    if (summonPose){
+        blinkTimer = -1;
+    }else{
+        blinkTimer ++;
+        if (blinkTimer &gt;= 80){
+            blinkTimer = -6;
+        }
+    }
 }
-
 </string>
           </argument>
         </arguments>
@@ -302,6 +417,65 @@ event_inherited();
         </arguments>
       </action>
     </event>
+    <event eventtype="7" enumb="14">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Gore
+// Added: gore eyes should be closed if enemy's eyes were closed
+var _spr; _spr = sprite_index;
+var _eat; _eat = (instance_exists(attacking));
+var _dance; _dance = (!summonPose &amp;&amp; (dancePause || _eat));
+
+if (summonPose){
+    sprite_index = sprPlantsMikuRun;  // needed for parent code
+}else if (_dance){
+    sprite_index = sprPlantsMikuDance;  // needed for parent code
+}
+
+event_inherited();
+sprite_index = _spr;
+
+var _ind = (bodyState-1);  // bodyState increments at end of User Event 4
+with (gore[_ind]){
+    if (_ind == 1 &amp;&amp; other.blinkTimer &lt; 0){  // head index, Miku was blinking
+        switch(drawSpr){  // blinking
+            case sprPlantsMikuRunHead:
+                drawSpr = sprPlantsMikuRunHeadBl;
+            break;
+            case sprPlantsMikuEatHead:
+                drawSpr = sprPlantsMikuEatHeadBl;
+            break;
+            case sprPlantsMikuDanceHead:
+                drawSpr = sprPlantsMikuDanceHeadBl;
+            break;
+            case sprPlantsMikuIdleHead:
+                drawSpr = sprPlantsMikuIdleHeadBl;
+            break;
+        }
+    }
+    
+    x += other.drawXOff*image_xscale;
+    y += other.drawYOff*image_yscale;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="7" enumb="13">
       <action>
         <libid>1</libid>
@@ -321,8 +495,9 @@ event_inherited();
             <kind>1</kind>
             <string>///eating
 if (!dead &amp;&amp; instance_exists(attacking) &amp;&amp; attackingTimerLen != 0){
-    eatingIndex += 4/attackingTimerLen;
-    if (eatingIndex &gt;= (sprite_get_number(sprPlantsMikuEatHead)/2)){
+    var _len = (2*5-1);
+    eatingIndex += _len/attackingTimerLen;  // animation goes fw then back
+    if (eatingIndex &gt;= _len){
         eatingIndex = 0;
         with (attacking){
             hp -= 1;
@@ -352,47 +527,81 @@ if (!dead &amp;&amp; instance_exists(attacking) &amp;&amp; attackingTimerLen != 
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///death
+            <string>///death + gore
 if (!dead &amp;&amp; !killing){
-    var _index = 0;
+    var _eat = (instance_exists(attacking));
+    var _dance = ((dancePause || _eat) &amp;&amp; !summonPose);
+    var _bodyIndex = 0;  // `_bodyIndex` variable is only needed for dance state
     //subimage
-    if (sprite_index == sprPlantsMikuRun){
+    if (_eat){
+        var _frames = 5;  // goes to 5/6 dancing frames
+        if (eatingIndex &lt; _frames){
+            image_index = eatingIndex;
+        }else{
+            image_index = _frames - (eatingIndex-_frames);
+        }
+        _bodyIndex = image_index;
+    }else if (_dance){
+        var _frames = 6;  // goes to 5/6 dancing frames
+        _frames = danceFrameTotal;  // dance animation - 1 flip
+        image_index = danceFrame;
+        _bodyIndex = image_index;
+        if (danceFlip == 1){
+            _bodyIndex += danceFrameTotal;
+        }
+    }else if (summonPose || sprite_index == sprPlantsMikuRun){
         var _peak = 6;
         image_index = abs(((floor(subimg) + (_peak)) mod (2*_peak)) - _peak);
     }else if (sprite_index == sprPlantsMikuIdle){
         image_index = floor(subimg) mod 10;
-    }else if (sprite_index == sprPlantsMikuEat){
-        image_index = floor(eatingIndex) mod 4;
     }
     
+    // head gore
     event_inherited();
+    // eating
+    with (gore[1]){
+        if (_dance &amp;&amp; !_eat){
+            image_xscale = other.danceFlip;
+        }
+    }
     
-    // add one extra piece of gore
+    // extra (body) gore
     goreAmt ++;
     
     gore[2] = instance_create(x, y, objPlantsMikuBodyGore);
-    if (sprite_index == sprPlantsMikuRun){
-        gore[2].y += 9*image_yscale;
-    }
     gore[2].sprite_index = sprite_index;
-    gore[2].subimg = subimg;
-    dead = true;
-    if (sprite_index == sprPlantsMikuRun){
+    gore[2].image_index = image_index;
+    gore[2].x += drawXOff*image_xscale;
+    gore[2].y += drawYOff*image_yscale;
+    if (_dance){
+        gore[2].sprite_index = sprPlantsMikuDance;
+        if (!_eat){
+            gore[2].image_index = _bodyIndex;
+        }
+        gore[2].x += danceBodyX*image_xscale;
+        gore[2].y += danceBodyY*image_yscale;
+    }else if (sprite_index == sprPlantsMikuRun){
+        gore[2].x += runBodyX*image_xscale;
+        gore[2].y += runBodyY*image_yscale;
+        gore[2].runBArmAng = runBArmAng;
+        gore[2].subimg = subimg;  // only used for run body
         gore[2].subimgSpd = 0.15;
     }else if (sprite_index == sprPlantsMikuIdle){
-        gore[2].subimgSpd = 0.1;
+        gore[2].x += idleBodyX*image_xscale;
+        gore[2].y += idleBodyY*image_yscale;
+        //gore[2].subimgSpd = 0.1;
     }
+    dead = true;
     
     if (audio_is_playing(snd)){
         audio_sound_gain(snd, 0, 400);
     }
     
-    for (var i=0; i&lt;4; i++){
+    for (var i=0; i&lt;4; i++;){
         if (instance_exists(cherry[i])){
-            cherry[i].danceTimer = danceTimer-1;
+            cherry[i].danceTimer = (danceTimer-1);
         }
     }
-
 }
 </string>
           </argument>
@@ -445,23 +654,24 @@ if (!dead &amp;&amp; !killing){
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Draw
+            <string>/// Draw
 var _glowAlpha = 0;
 if (glowFrame &gt; 0){
     _glowAlpha = scrPlantsGlow(glowFrame, glowLen);
 }
+var _runPeak = 6;
+var _blink = (blinkTimer &gt;= 0);
+var _eating = (instance_exists(attacking));
+var _dance = ((_eating || dancePause) &amp;&amp; !summonPose);
 
 //sprite part offsets
-var _eatHeadX = 0;
-var _eatHairY = -7;
-
 if (instance_exists(gore[1])){
     with (gore[1]){
         if (sprite_index == sprPlantsMikuRun &amp;&amp; state == 1){
             var _rotCoords = scrChangeOrigin(0, 0, -other.runHairX, -(other.runHairY - (-9)), image_angle);
-            draw_sprite_ext(sprPlantsMikuRunHair, (floor(other.subimg) mod 7), floor(x) + _rotCoords[0]*image_xscale, floor(y) + _rotCoords[1]*image_yscale, 1, 1, image_angle, c_white, image_alpha); //back braid
+            draw_sprite_ext(sprPlantsMikuRunHair, (floor(other.subimg) mod (_runPeak)), x + _rotCoords[0]*image_xscale, y + _rotCoords[1]*image_yscale, 1, 1, image_angle, c_white, image_alpha); //back braid
             if (_glowAlpha &gt; 0){
-                draw_sprite_ext(sprPlantsMikuRunHair, (floor(other.subimg) mod 7), floor(x) + _rotCoords[0]*image_xscale, floor(y) + _rotCoords[1]*image_yscale, 1, 1, image_angle, c_white, _glowAlpha); //back braid
+                draw_sprite_ext(sprPlantsMikuRunHair, (floor(other.subimg) mod (_runPeak)), x + _rotCoords[0]*image_xscale, y + _rotCoords[1]*image_yscale, 1, 1, image_angle, c_white, _glowAlpha); //back braid
             }
         }
     }
@@ -469,68 +679,137 @@ if (instance_exists(gore[1])){
 
 if (!dead || crushed){
     scrPlantsCrushStart(64, 128 - 21*image_yscale);
+    var _headSpr;
+    var _drawX, _drawY;
+    _drawX = x+drawXOff; _drawY = y+drawYOff;
     
-    if (instance_exists(attacking)){
-        var _headFrame, _index;
-        _index = floor(eatingIndex) mod 4;
-        draw_sprite_ext(sprPlantsMikuEat, floor(eatingIndex) mod 2, floor(x) + eatBodyX*image_xscale, floor(y) + eatBodyY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
+    if (_dance){
+        var _index = 0, _bodyIndex = 0;
+        var _flip = 1;
+        var _frames;
+        if (_eating){  // higher priority than dancing
+            _frames = 5;  // goes to 5/6 dancing frames
+            if (eatingIndex &lt; _frames){
+                _index = ((eatingIndex - 2) + _frames) mod _frames;
+            }else{
+                _index = _frames - (((eatingIndex - 2) + _frames) mod _frames);
+            }
+            _flip = 1;  // should look left
+            _bodyIndex = _index;
+        }else if (dancePause){
+            _frames = danceFrameTotal;  // dance animation - 1 flip
+            _index = danceFrame;
+            _bodyIndex = _index;
+            _flip = danceFlip;
+        }
+        
+        // body+arm use 2x frames
+        if (_flip == 1){
+            _bodyIndex += danceFrameTotal;
+        }
+        
+        // account for blinking, eating
+        if (_eating){
+            if (_blink){
+                _headSpr = sprPlantsMikuEatHead;
+            }else{
+                _headSpr = sprPlantsMikuEatHeadBl;
+            }
+        }else{
+            if (_blink){
+                _headSpr = sprPlantsMikuDanceHead;
+            }else{
+                _headSpr = sprPlantsMikuDanceHeadBl;
+            }
+        }
+        
+        var _flipXScale; _flipXScale = (image_xscale * _flip);
+        
+        if (bodyState &lt; 2){
+            draw_sprite_ext(_headSpr, _index, _drawX + danceHeadX*image_xscale, _drawY + danceHeadY*image_yscale, _flipXScale, image_yscale, image_angle+headTilt, c_white, 1);
+        }
+        draw_sprite_ext(sprPlantsMikuDance, _bodyIndex, _drawX + danceBodyX*image_xscale, _drawY + danceBodyY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
         if (bodyState == 0){
-            draw_sprite_ext(sprPlantsMikuEatArm, _index, floor(x) + eatArmX*image_xscale, floor(y) + eatArmY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
+            draw_sprite_ext(sprPlantsMikuDanceArm, _bodyIndex, _drawX + danceArmX*image_xscale, _drawY + danceArmY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
+        }
+        
+        if (_glowAlpha &gt; 0){
+            var _glowOff; _glowOff = 6;
+            var _glowInd; _glowInd = (_index + _glowOff);
+            var _glowBodyInd; _glowBodyInd = (_bodyIndex + _glowOff);
+            
+            if (bodyState &lt; 2){
+                draw_sprite_ext(_headSpr, _glowInd, _drawX + danceHeadX*image_xscale, _drawY + danceHeadY*image_yscale, _flipXScale, image_yscale, image_angle+headTilt, c_white, _glowAlpha);
+            }
+            draw_sprite_ext(sprPlantsMikuDance, _glowBodyInd, _drawX + danceBodyX*image_xscale, _drawY + danceBodyY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
+            if (bodyState == 0){
+                draw_sprite_ext(sprPlantsMikuDanceArm, _glowBodyInd, _drawX + danceArmX*image_xscale, _drawY + danceArmY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
+            }
+        }
+    }else if (sprite_index == sprPlantsMikuRun || summonPose){
+        var _index = (floor(subimg) mod (_runPeak));
+        var _bodyindex = abs(((floor(subimg) + (_runPeak)) mod (2*_runPeak)) - _runPeak);
+        
+        // used to blink/close eyes
+        if (_blink){
+            _headSpr = sprPlantsMikuRunHead;
+        }else{
+            _headSpr = sprPlantsMikuRunHeadBl;
+        }
+        var _armAng = (runBArmAng-255);
+        
+        // draw enemy pieces
+        if (bodyState &lt; 2){
+            draw_sprite_ext(sprPlantsMikuRunHair, _index, _drawX + runHairX*image_xscale, _drawY + runHairY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
+        }
+        draw_sprite_ext(sprPlantsMikuRunBArm, 0, _drawX + runBArmX*image_xscale, _drawY + runBArmY*image_yscale, image_xscale, image_yscale, image_angle + _armAng, c_white, 1);
+        draw_sprite_ext(sprPlantsMikuRun, _bodyindex, _drawX + runBodyX*image_xscale, _drawY + runBodyY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
+        if (bodyState == 0){
+            draw_sprite_ext(sprPlantsMikuRunArm, _bodyindex, _drawX + runArmX*image_xscale, _drawY + runArmY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
         }
         if (bodyState &lt; 2){
-            draw_sprite_ext(sprPlantsMikuEatHead, _index, floor(x) + eatHeadX*image_xscale, floor(y) + eatHeadY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
+            draw_sprite_ext(_headSpr, _index, _drawX + runHeadX*image_xscale, _drawY + runHeadY*image_yscale, image_xscale, image_yscale, image_angle+headTilt, c_white, 1);
         }
         if (_glowAlpha &gt; 0){
-            draw_sprite_ext(sprPlantsMikuEat, (floor(eatingIndex) mod 2) + 2, floor(x) + eatBodyX*image_xscale, floor(y) + eatBodyY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
+            var _glowOff; _glowOff = 7;
+            var _glowInd; _glowInd = (_index + _glowOff);
+            if (bodyState &lt; 2){
+                draw_sprite_ext(sprPlantsMikuRunHair, _glowInd, _drawX + runHairX*image_xscale, _drawY + runHairY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
+            }
+            draw_sprite_ext(sprPlantsMikuRunBArm, 1, _drawX + runBArmX*image_xscale, _drawY + runBArmY*image_yscale, image_xscale, image_yscale, image_angle + _armAng, c_white, _glowAlpha);
+            draw_sprite_ext(sprPlantsMikuRun, _bodyindex + _glowOff, _drawX + runBodyX*image_xscale, _drawY + runBodyY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
             if (bodyState == 0){
-                draw_sprite_ext(sprPlantsMikuEatArm, _index + 4, floor(x) + eatArmX*image_xscale, floor(y) + eatArmY*image_yscale*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
+                draw_sprite_ext(sprPlantsMikuRunArm, _bodyindex + _glowOff, _drawX + runArmX*image_xscale, _drawY + runArmY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
             }
             if (bodyState &lt; 2){
-                draw_sprite_ext(sprPlantsMikuEatHead, _index + 4, floor(x) + eatHeadX*image_xscale, floor(y) + eatHeadY*image_yscale*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
-            }
-        }
-    }else if (sprite_index == sprPlantsMikuRun){
-        var _peak = 6;
-        var _index = (floor(subimg) mod 7);
-        var _bodyindex = abs(((floor(subimg) + (_peak)) mod (2*_peak)) - _peak);
-        if (bodyState &lt; 2){
-            draw_sprite_ext(sprPlantsMikuRunHair, _index, floor(x) + runHairX*image_xscale, floor(y) + runHairY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
-        }
-        draw_sprite_ext(sprPlantsMikuRun, _bodyindex, floor(x) + runBodyX*image_xscale, floor(y) + runBodyY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
-        if (bodyState == 0){
-            draw_sprite_ext(sprPlantsMikuRunArm, _bodyindex, floor(x) + runArmX*image_xscale, floor(y) + runArmY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
-        }
-        if (bodyState &lt; 2){
-            draw_sprite_ext(sprPlantsMikuRunHead, _index, floor(x) + runHeadX*image_xscale, floor(y) + runHeadY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
-        }
-        if (_glowAlpha &gt; 0){
-            if (bodyState &lt; 2){
-                draw_sprite_ext(sprPlantsMikuRunHair, _index + 7, floor(x) + runHairX*image_xscale, floor(y) + runHairY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
-            }
-            draw_sprite_ext(sprPlantsMikuRun, _bodyindex + 7, floor(x) + runBodyX*image_xscale, floor(y) + runBodyY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
-            if (bodyState == 0){
-                draw_sprite_ext(sprPlantsMikuRunArm, _bodyindex + 7, floor(x) + runArmX*image_xscale, floor(y) + runArmY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
-            }
-            if (bodyState &lt; 2){
-                draw_sprite_ext(sprPlantsMikuRunHead, _index + 7, floor(x) + runHeadX*image_xscale, floor(y) + runHeadY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
+                draw_sprite_ext(_headSpr, _bodyindex + _glowOff, _drawX + runHeadX*image_xscale, _drawY + runHeadY*image_yscale, image_xscale, image_yscale, image_angle+headTilt, c_white, _glowAlpha);
             }
         }
     }else if (sprite_index == sprPlantsMikuIdle){
         var _index = (floor(subimg) mod 10);
-        draw_sprite_ext(sprPlantsMikuIdle, _index, floor(x) + idleBodyX*image_xscale, floor(y) + idleBodyY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
-        if (bodyState == 0){
-            draw_sprite_ext(sprPlantsMikuIdleArm, _index, floor(x) + idleArmX*image_xscale, floor(y) + idleArmY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
+        // used to blink/close eyes
+        if (_blink){
+            _headSpr = sprPlantsMikuIdleHead;
+        }else{
+            _headSpr = sprPlantsMikuIdleHeadBl;
         }
+        
         if (bodyState &lt; 2){
-            draw_sprite_ext(sprPlantsMikuIdleHead, _index, floor(x) + idleHeadX*image_xscale, floor(y) + idleHeadY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
+            draw_sprite_ext(_headSpr, _index, _drawX + idleHeadX*image_xscale, _drawY + idleHeadY*image_yscale, image_xscale, image_yscale, image_angle+headTilt, c_white, 1);
+        }
+        draw_sprite_ext(sprPlantsMikuIdle, _index, _drawX + idleBodyX*image_xscale, _drawY + idleBodyY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
+        if (bodyState == 0){
+            draw_sprite_ext(sprPlantsMikuIdleArm, _index, _drawX + idleArmX*image_xscale, _drawY + idleArmY*image_yscale, image_xscale, image_yscale, image_angle, c_white, 1);
         }
         if (_glowAlpha &gt; 0){
-            draw_sprite_ext(sprPlantsMikuIdle, _index + 10, floor(x) + idleBodyX*image_xscale, floor(y) + idleBodyY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
-            if (bodyState == 0){
-                draw_sprite_ext(sprPlantsMikuIdleArm, _index + 10, floor(x) + idleArmX*image_xscale, floor(y) + idleArmY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
-            }
+            var _glowOff; _glowOff = 10;
+            var _glowInd; _glowInd = (_index + _glowOff);
             if (bodyState &lt; 2){
-                draw_sprite_ext(sprPlantsMikuIdleHead, _index + 10, floor(x) + idleHeadX*image_xscale, floor(y) + idleHeadY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
+                draw_sprite_ext(_headSpr, _glowInd, _drawX + idleHeadX*image_xscale, _drawY + idleHeadY*image_yscale, image_xscale, image_yscale, image_angle+headTilt, c_white, _glowAlpha);
+            }
+            draw_sprite_ext(sprPlantsMikuIdle, _glowInd, _drawX + idleBodyX*image_xscale, _drawY + idleBodyY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
+            if (bodyState == 0){
+                draw_sprite_ext(sprPlantsMikuIdleArm, _glowInd, _drawX + idleArmX*image_xscale, _drawY + idleArmY*image_yscale, image_xscale, image_yscale, image_angle, c_white, _glowAlpha);
             }
         }
     }

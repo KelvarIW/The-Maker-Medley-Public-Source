@@ -28,11 +28,6 @@
             <string>if (instance_number(object_index) &gt; 1){
     instance_destroy();
 }
-if (room == rGeezer01 || room == rGeezerHitchcock){
-    background_alpha[1] = 0.4 + 0.3*sin(global.count*pi/64);
-    background_y[1] = (global.count - 1) mod 16;
-    background_y[2] = -((global.count - 1) mod 16);
-}
 zililyCol = make_color_rgb(0, 2, 4);
 sharkCol = make_colour_rgb(78, 78, 78);
 patrickFailsafeCol = make_colour_rgb(0, 144, 255);
@@ -45,35 +40,7 @@ lobbyCol2 = make_color_rgb(0, 135, 161);
 drawXOff = 0;
 drawYOff = 0;
 
-lockBK = false;  // stop the scrolling lines in the Geezer fight during the ending cutscene
 depthInit = depth;
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="3" enumb="2">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>if (!lockBK){
-    if (room == rGeezer01 || room == rGeezerHitchcock){
-        background_alpha[1] = 0.4 + 0.3*sin(global.count*pi/64);
-    }
-}
 </string>
           </argument>
         </arguments>
@@ -96,10 +63,7 @@ depthInit = depth;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>lockBK = false;  // stop the scrolling lines in the Geezer fight during the ending cutscene
-depth = depthInit;
-background_alpha[0] = 1;
-background_alpha[1] = 1;
+            <string>depth = depthInit;
 
 switch(room){
     case rStage02Telejump:
@@ -107,10 +71,7 @@ switch(room){
     break;
     case rGeezer01:
     case rGeezerHitchcock:
-        if (global.count mod 74 &lt; 54)
-            background_alpha[2] = min(0.85, sin(pi*(global.count mod 74)/108));
-        else
-            background_alpha[2] = min(0.85, sin(pi*((global.count mod 74) - 34)/40));
+        instance_create(0, 0, objGeezerBKLines);
         break;
 }
 </string>
@@ -196,6 +157,10 @@ if (room == rStage01Ace &amp;&amp; (!instance_exists(objS1Gravitron) || !objS1Gr
     draw_set_color(c_black);
     draw_rectangle(-800, -608, 1600, 1216, false); //account for screen rotation
     draw_set_color(c_white);
+    
+    with (objGeezerBKLines){
+        event_perform(ev_draw, ev_draw_begin);  // drawn in objGeezerSurvival in rGeezerHitchcock
+    }
 }else if (room == rStage1to2Transition){
     draw_set_color(NANGIntroColor);
     draw_line_width(261, 0, 261, 608, 3);

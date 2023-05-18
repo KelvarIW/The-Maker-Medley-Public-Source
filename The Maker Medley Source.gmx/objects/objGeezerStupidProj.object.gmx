@@ -81,8 +81,8 @@ gravity = 0.144;
     instance_destroy();
 }
 
-if (gravity &gt; 0 &amp;&amp; vspeed &gt; 13){
-    vspeed = 13;
+if (gravity &gt; 0 &amp;&amp; vspeed &gt; 11){
+    vspeed = 11;
     gravity = 0;
 }
 </string>

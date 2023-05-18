@@ -29,7 +29,7 @@
 knockbackSine = -1;
 knockbackDir = 0;
 trackPlayer = false;
-image_angle = point_direction(x, y, 400, 535);
+image_angle = point_direction(x, y, 400, 496);
 </string>
           </argument>
         </arguments>

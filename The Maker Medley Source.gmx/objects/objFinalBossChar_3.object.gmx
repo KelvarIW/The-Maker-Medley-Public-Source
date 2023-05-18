@@ -135,7 +135,7 @@ scrPracticeEnd();
                     }
                 }
             }
-            if (counter &gt;= 80 &amp;&amp; counter &lt;= 190 &amp;&amp; counter mod 8 == 0){
+            if (counter &gt;= 80 &amp;&amp; counter &lt;= 190 &amp;&amp; counter mod 12 == 0){
                 repeat(2){
                     with (instance_create(400 + irandom_range(-330, 330), 290, objUndertaleProj)){
                         index = 0;

@@ -51,6 +51,9 @@ yOrig = 0;  // like changing the y origin by that amount
 frozen = false;
 fromEnemy = true;  // if false, this instance must have User Event 0 manually called
 
+//miku
+blink = false;
+
 //hyper cherry
 hue = 0;
 sat = 255;
@@ -87,6 +90,7 @@ angOff = 0; // will be subtracted from image_angle
 // image_xscale and image_yscale are taken into account for the origin offset in the draw code, so base those numbers on the sprite size in the editor
 
 // other values specific to the type of gore can be set here as well
+var _peak;
 switch(sprite_index){
     case sprCherry:
     case sprPlantsCherryHit:
@@ -114,12 +118,14 @@ switch(sprite_index){
             drawInd = glowInd;
         }
         break;
+    // Note: Miku values are copied from `objPlantsMiku` Create Event
     case sprPlantsMikuRun:
-        drawInd = floor(image_index) mod 7;
+        _peak = 6;
+        drawInd = floor(image_index) mod (_peak+1);
         if (state == 0){
             drawSpr = sprPlantsMikuRunArm;
-            x += 3*image_xscale;
-            y += 4*image_yscale;
+            x += (-1)*image_xscale;
+            y += (5)*image_yscale;
             
             //the origin is calculated based on the animation frame
             var _ang;
@@ -158,19 +164,23 @@ switch(sprite_index){
             angOff = _ang;
         }else if (state == 1){
             drawSpr = sprPlantsMikuRunHead;
-            y += -9*image_yscale;
+            
+            x += (0)*image_xscale;
+            y += (-1)*image_yscale;
             
             width = 32;
             height = 32;
             yOrig = -9;
         }
         glowSpr = drawSpr;
-        glowInd = 7 + drawInd;
+        glowInd = (_peak+1) + drawInd;
         break;
     case sprPlantsMikuIdle:
         drawInd = floor(image_index) mod 10;
         if (state == 0){  // arm
             drawSpr = sprPlantsMikuIdleArm;
+            x += (0)*image_xscale;
+            y += (0)*image_yscale;
             
             switch(floor(drawInd)){
                 case 0:
@@ -203,7 +213,13 @@ switch(sprite_index){
             width = 20;
             height = 7;
         }else if (state == 1){
-            drawSpr = sprPlantsMikuIdleHead;
+            if (blink){
+                drawSpr = sprPlantsMikuIdleHeadBl;
+            }else{
+                drawSpr = sprPlantsMikuIdleHead;
+            }
+            x += (0)*image_xscale;
+            y += (0)*image_yscale;
             yOrig = -12;
             
             width = 32;
@@ -212,21 +228,24 @@ switch(sprite_index){
         glowSpr = drawSpr;
         glowInd = 10 + drawInd;
         break;
-    case sprPlantsMikuEat:
-        drawInd = floor(image_index) mod 4;
+    case sprPlantsMikuDance:
+        drawInd = floor(image_index) mod 6;
         if (state == 0){
-            drawSpr = sprPlantsMikuEatArm;
-            xOrig = -6;
-            yOrig = +3;
+            drawSpr = sprPlantsMikuDanceArmGore;
             
-            x += 3*image_xscale;
-            y += 6*image_yscale;
+            x += ( 5)*image_xscale;
+            y += ( 5)*image_yscale;
             angOff = -27;
             width = 16;
             height = 10;
         }else{
-            drawSpr = sprPlantsMikuEatHead;
-            y -= 7*image_yscale;
+            if (blink){
+                drawSpr = sprPlantsMikuDanceHeadBl;
+            }else{
+                drawSpr = sprPlantsMikuDanceHead;
+            }
+            x += ( 0)*image_xscale;
+            y += (-13)*image_yscale;
             xOrig = -3;
             yOrig = -5;
             
@@ -346,7 +365,7 @@ y += yOrig  * image_yscale;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/*
+            <string> /*
 //DEBUG
 image_angle += 2;
 frozen = true;
@@ -457,7 +476,6 @@ switch(sprite_index){
 }
 
 var _origin = scrChangeOrigin(0, 0, xOrig, yOrig, image_angle);
-
 draw_sprite_ext(drawSpr, drawInd, x + _origin[0]*_xscale, y + _origin[1]*_yscale, _xscale, _yscale, _angle, _mainBlend, _alpha);
 if (glowFrame &gt; 0){
     var _glowAlpha = scrPlantsGlow(glowFrame, glowLen);

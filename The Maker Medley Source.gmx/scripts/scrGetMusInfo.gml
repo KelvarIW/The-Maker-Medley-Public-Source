@@ -26,8 +26,8 @@ switch (_songID){
         _desc = "Boss 1";
     break;
     case global.BGMStage2a:
-        _name = "Paladin";
-        _maker = "EnV";
+        _name = "Pulsar";
+        _maker = "Ocular Nebula";
         _desc = "Stage 2";
     break;
     case global.BGMStage2b:

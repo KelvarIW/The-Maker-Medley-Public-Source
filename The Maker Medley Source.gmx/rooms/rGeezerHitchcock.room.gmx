@@ -10,7 +10,7 @@
   <persistent>0</persistent>
   <colour>12160845</colour>
   <showcolour>-1</showcolour>
-  <code>background_alpha[2] = 0.45;</code>
+  <code></code>
   <enableViews>-1</enableViews>
   <clearViewBackground>-1</clearViewBackground>
   <clearDisplayBuffer>-1</clearDisplayBuffer>
@@ -32,8 +32,8 @@
   </makerSettings>
   <backgrounds>
     <background visible="0" foreground="0" name="" x="0" y="0" htiled="-1" vtiled="-1" hspeed="0" vspeed="0" stretch="0"/>
-    <background visible="0" foreground="0" name="bkGeezerLines" x="0" y="0" htiled="-1" vtiled="-1" hspeed="0" vspeed="0" stretch="0"/>
-    <background visible="0" foreground="0" name="bkGeezerLines" x="0" y="0" htiled="-1" vtiled="-1" hspeed="0" vspeed="0" stretch="0"/>
+    <background visible="0" foreground="0" name="" x="0" y="0" htiled="-1" vtiled="-1" hspeed="0" vspeed="0" stretch="0"/>
+    <background visible="0" foreground="0" name="" x="0" y="0" htiled="-1" vtiled="-1" hspeed="0" vspeed="0" stretch="0"/>
     <background visible="0" foreground="0" name="" x="0" y="0" htiled="-1" vtiled="-1" hspeed="0" vspeed="0" stretch="0"/>
     <background visible="0" foreground="0" name="" x="0" y="0" htiled="-1" vtiled="-1" hspeed="0" vspeed="0" stretch="0"/>
     <background visible="0" foreground="0" name="" x="0" y="0" htiled="-1" vtiled="-1" hspeed="0" vspeed="0" stretch="0"/>
@@ -128,7 +128,7 @@
     <instance objName="objBlockBroken" x="688" y="1840" name="inst_20365D98" locked="0" code="image_index = 1;&#xA;sprite_index = sprHitchBlock;&#xA;image_xscale = -1;&#xA;" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
     <instance objName="objBlockBroken" x="48" y="1840" name="inst_ED7B6F45" locked="0" code="image_index = 1;&#xA;sprite_index = sprHitchBlock;&#xA;image_xscale = -1;&#xA;" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
     <instance objName="objMakerBossSave" x="400" y="2288" name="inst_A3DA6FD8" locked="0" code="" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
-    <instance objName="objDropShadowSquare" x="0" y="320" name="inst_3B354524" locked="0" code="" scaleX="2" scaleY="66" colour="4294967295" rotation="0"/>
+    <instance objName="objDropShadowSquare" x="48" y="320" name="inst_C6AE24FD" locked="0" code="" scaleX="0.5" scaleY="63" colour="4294967295" rotation="0"/>
   </instances>
   <tiles>
     <tile bgName="tlHitchcock" x="736" y="320" w="16" h="16" xo="0" yo="0" id="10011782" name="inst_68272194" depth="-6" locked="0" colour="4294967295" scaleX="1" scaleY="1"/>

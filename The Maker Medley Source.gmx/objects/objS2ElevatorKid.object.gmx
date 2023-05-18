@@ -65,6 +65,7 @@ with (objS2ElevatorExit){
     with (objMakerCutsceneSkip){disappear = true;}
     alarm[1] = 10;
 }
+with (objWorld){event_perform(ev_alarm, 2);}
 
 if (!instance_exists(objS2NANGCtrl)){
     with (instance_create(0, 0, objS2NANGCtrl)){

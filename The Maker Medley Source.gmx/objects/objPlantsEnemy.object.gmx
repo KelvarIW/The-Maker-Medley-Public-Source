@@ -351,12 +351,10 @@ if (!dead &amp;&amp; !killing){
     glowFrame = 20;
     
     //create gore
-    if (inheritAttacking){
-        var _gore = (goreAmt-bodyState);
-        if (_gore &gt;= 1){
-            repeat(_gore){
-                event_user(4);
-            }
+    var _gore = (goreAmt-bodyState);
+    if (_gore &gt;= 1){
+        repeat(_gore){
+            event_user(4);
         }
     }
 }

@@ -134,6 +134,8 @@ with (objPlayer){
 var _inst = instance_create(x, y, objFinalBossCutsceneDie);
 _inst.grow = true;
 _inst.shrink = false;
+audio_play_sound(sndFinalRNGPowerUp, 0, 0);
+
 with (objCutsceneCamera){
     targetObject = objFinalBossCutsceneDie;
     //var _width;

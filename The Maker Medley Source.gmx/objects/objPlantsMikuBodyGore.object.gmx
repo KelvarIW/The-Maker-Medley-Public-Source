@@ -32,6 +32,7 @@ glowFrame = glowLen-1;
 frozen = false;
 subimg = 0;
 subimgSpd = 0;
+runBArmAng = 270;
 </string>
           </argument>
         </arguments>
@@ -64,14 +65,15 @@ subimgSpd = 0;
         }
     }
     
-    if (floor(image_index) != 2 &amp;&amp; floor(image_index) != 3 &amp;&amp; floor(image_index) != 6){
-        image_index = (image_index + 0.15) mod image_number;
+    if (sprite_index == sprPlantsMikuRun){
+        subimg += subimgSpd;
+        /*if (floor(image_index) != 2 &amp;&amp; floor(image_index) != 3 &amp;&amp; floor(image_index) != 6){
+            image_index = (image_index + 0.15) mod image_number;
+        }*/
     }
     if (glowFrame &gt; 0){
         glowFrame --;
     }
-    
-    subimg += subimgSpd;
 }
 </string>
           </argument>
@@ -122,35 +124,39 @@ draw_sprite_ext(sprPlantsShadow, 0, x-view_xview, bbox_bottom - 6, image_xscale*
           <argument>
             <kind>1</kind>
             <string>///Main body
-var _glowAlpha, _index;
+var _x = x, _y = y;
+var _glowAlpha = 0, _index = 0;
 if (glowFrame &gt; 0){
     _glowAlpha = scrPlantsGlow(glowFrame, glowLen);
-}else{
-    _glowAlpha = 0;
 }
 
-if (sprite_index == sprPlantsMikuRun){
+if (sprite_index == sprPlantsMikuRun || sprite_index == sprPlantsMikuDance){
     var _peak = 6;
     _index = abs(((floor(subimg) + (_peak)) mod (2*_peak)) - _peak);
+    _x += -18*dsin(image_angle);
+    _y += +18*dsin(image_angle)/2;
     
-    draw_sprite_ext(sprite_index, _index, x-18*dsin(image_angle), y+18*dsin(image_angle)/2, 1, 1, image_angle, c_white, image_alpha);
+    // draw back arm
+    var _runBArmX = 0, _runBArmY = -9;
+    /*
+    runBArmX = runBodyX+(+0);
+    runBArmY = runBodyY+(-9);
+    */
+    var _rot = scrChangeOriginScaled(0, 0, -_runBArmX, -_runBArmY, image_angle, image_xscale, image_yscale);
+    var _ang = (runBArmAng-255);
+    draw_sprite_ext(sprPlantsMikuRunBArm, 0, _x + _rot[0], _y + _rot[1], image_xscale, image_yscale, image_angle + _ang, c_white, 1)
     if (_glowAlpha &gt; 0){
-        draw_sprite_ext(sprite_index, _index, x-18*dsin(image_angle), y+18*dsin(image_angle)/2, 1, 1, image_angle, c_white, _glowAlpha*image_alpha);
+        draw_sprite_ext(sprPlantsMikuRunBArm, 1, _x + _rot[0], _y + _rot[1], image_xscale, image_yscale, image_angle + _ang, c_white, _glowAlpha*image_alpha);
     }
 }else if (sprite_index == sprPlantsMikuIdle){
     _index = floor(image_index) mod 10;
-    
-    draw_sprite_ext(sprite_index, _index, x-25*dsin(image_angle), y+25*dsin(image_angle)/2, 1, 1, image_angle, c_white, image_alpha);
-    if (_glowAlpha &gt; 0){
-        draw_sprite_ext(sprite_index, _index, x-25*dsin(image_angle), y+25*dsin(image_angle)/2, 1, 1, image_angle, c_white, _glowAlpha*image_alpha);
-    }
-}else if (sprite_index == sprPlantsMikuEat){
-    _index = floor(image_index) mod 2;
-    
-    draw_sprite_ext(sprite_index, _index, x-25*dsin(image_angle), y+25*dsin(image_angle)/2, 1, 1, image_angle, c_white, image_alpha);
-    if (_glowAlpha &gt; 0){
-        draw_sprite_ext(sprite_index, _index, x-25*dsin(image_angle), y+25*dsin(image_angle)/2, 1, 1, image_angle, c_white, _glowAlpha*image_alpha);
-    }
+    _x += x-25*dsin(image_angle);
+    _y += y+25*dsin(image_angle)/2;
+}
+
+draw_sprite_ext(sprite_index, _index, _x, _y, 1, 1, image_angle, c_white, image_alpha);
+if (_glowAlpha &gt; 0){
+    draw_sprite_ext(sprite_index, _index, _x, _y, 1, 1, image_angle, c_white, _glowAlpha*image_alpha);
 }
 </string>
           </argument>

@@ -446,12 +446,6 @@ if (!global.dead){ // did not die during Hitchcock avoidance
                     alarm[4] = 75;
                 }
                 break;
-            case 28:
-                scrIdentAttack(rGeezer01, 4);
-            case 18:
-            case 8:
-                with (objGeezerStupidSpike){active = true;atkCounter = 0;}
-                break;
             case 3:
                 with (objGeezerMadLava){
                     keepRising = false;  // buffed mode
@@ -469,13 +463,16 @@ if (!global.dead){ // did not die during Hitchcock avoidance
                 break;
         }
         if (counter &gt;= 27 &amp;&amp; counter &lt; 40){
-            if ((counter - floor(counter)) == 0 || (counter - floor(counter)) == 1){ //WHY CAN THIS RETURN 1???  &lt;- RandomFangamer, welcome to the world of floating point errors :)
+            if ((counter - floor(counter)) == 0 || (counter - floor(counter)) == 1){ //WHY CAN THIS RETURN 1???  &lt;-  welcome to the world of floating point errors :)
                 staticFrames = 6;
                 audio_play_sound(sndGeezerStatic, 0, 0);
             }
         }
         if (counter &gt; 0 &amp;&amp; counter &lt; 40){
-            if (counter mod 10 == 0 || counter mod 10 == 10){ //rounding errors :/
+            // "Stupid Idiot Spike" character
+            var _t = (40 - counter);  // value displayed on visible timer
+            if (_t == 31.5 || _t == 21.5 || _t == 11.5){
+                // warning sign
                 with (instance_create(640, 464, objMakerDangerProp)){
                     image_alpha = 0;
                     alphaIncAmt = 0.1;
@@ -483,6 +480,12 @@ if (!global.dead){ // did not die during Hitchcock avoidance
                     image_xscale = 2;
                     image_yscale = 2;
                     sprite_index = sprMakerDangerPropR;
+                }
+            }else if (_t == 29.5 || _t == 19.5 || _t == 9.5){
+                // Stupid Idiot Spike appearance
+                with (objGeezerStupidSpike){active = true;atkCounter = 0;}
+                if (_t == 29.5){
+                    scrIdentAttack(rGeezer01, 4);
                 }
             }
         }
@@ -590,7 +593,7 @@ if (!global.dead){ // did not die during Hitchcock avoidance
             speed = 0;
         }
         with (objGeneralNonkiller) image_speed = 0; //bullet collision effect
-        with (objBackgroundManager){lockBK = true;}
+        with (objGeezerBKLines){lockBK = true;}
         background_vspeed[1] = 0;
         background_vspeed[2] = 0;
         with (objMakerCirclePart){ //dust
@@ -761,16 +764,6 @@ event_perform_object(objGeezerBoss, ev_other, ev_user1);
             <kind>1</kind>
             <string>///Set up final phase arena
 
-// Create Geezer objects
-instance_create(0, 288, objMakerSpikeUp);
-instance_create(32, 288, objMakerSpikeUp);
-instance_create(736, 288, objMakerSpikeUp);
-instance_create(768, 288, objMakerSpikeUp);
-if (buff()){
-    instance_create(32, 352, objGeezerMadCannon);
-    instance_create(768, 352, objGeezerMadCannon);
-}
-
 // Disable/Remove Hitchcock Elements
 /*with (objTilesToSurf){  // already disabled
     draw = false;
@@ -789,20 +782,39 @@ with (objMakerCirclePart){
     }
 }
 
+// Create Geezer objects
+instance_create(0, 288, objMakerSpikeUp);
+instance_create(32, 288, objMakerSpikeUp);
+instance_create(736, 288, objMakerSpikeUp);
+instance_create(768, 288, objMakerSpikeUp);
+if (buff()){
+    instance_create(32, 352, objGeezerMadCannon);
+    instance_create(768, 352, objGeezerMadCannon);
+}
+
 // Create Geezer Visuals
 background_visible[1] = true;
 background_visible[2] = true;
-for(var i=10;i&lt;19;i++;){
-    instance_create(0, i*32, objGeezerBlock);
-    instance_create(32, i*32, objGeezerBlock);
-    instance_create(736, i*32, objGeezerBlock);
-    instance_create(768, i*32, objGeezerBlock);
-}
-for(var i=2;i&lt;23;i++;){
-    (instance_create(32*i, 544, objGeezerBlock)).sprite_index = sprGeezerPlatform;
-    with (objMakerPlatform){
-        visible = false;
-    }
+var _x, _y, _xsc, _ysc;
+var _inst;
+// left
+_x = 0; _y = 320; _xsc = 2; _ysc = 19;
+_inst = instance_create(_x, _y, objGeezerBlockMulti);
+_inst.image_xscale = _xsc;
+_inst.image_yscale = _ysc;
+//right 
+_x = 800-(32*_xsc);
+_inst = instance_create(_x, _y, objGeezerBlockMulti);
+_inst.image_xscale = _xsc;
+_inst.image_yscale = _ysc;
+// floor
+_x = 64; _y = 544; _xsc = 21; _ysc = 1;
+_inst = instance_create(_x, _y, objGeezerBlockMulti);
+_inst.sprite_index = sprGeezerPlatform;
+_inst.image_xscale = _xsc;
+_inst.image_yscale = _ysc;
+with (objMakerPlatform){
+    visible = false;
 }
 </string>
           </argument>
@@ -892,6 +904,10 @@ with (objGeezerMadCannon){
     draw_set_color(c_black);
     draw_rectangle(-800, -608, 1600, 1216, false);
     draw_set_color(c_white);
+    
+    with (objGeezerBKLines){
+        event_perform(ev_draw, ev_draw_begin);  // drawn in objGeezerSurvival in rGeezerHitchcock
+    }
 }
 
 if (staticFrames &gt; 0){
@@ -920,7 +936,6 @@ if (staticFrames &gt; 0){
     }else{
         event_perform_object(objGeezerBoss, ev_other, ev_user2);  // Draw Geezer Face and trail
     }
-    
 }
 
 if (!global.screenshotMode &amp;&amp; textAlpha &gt; 0){

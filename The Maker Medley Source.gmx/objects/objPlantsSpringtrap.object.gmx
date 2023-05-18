@@ -129,7 +129,7 @@ alarm[0] = irandom_range(3, 5);
             }
         }
         var _springAnimSpd = 1/4;
-        if (!growing || (growingTimer - 12) &gt; 14){
+        if (!growing || growingTimer &gt; 14){
             //test for collisions
             if (!springAnim){
                 if (image_index &gt; 0){

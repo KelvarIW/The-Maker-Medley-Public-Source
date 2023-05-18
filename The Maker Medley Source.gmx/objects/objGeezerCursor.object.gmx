@@ -38,6 +38,10 @@ drawPY = 0;
 drawPFrame = 0;
 drawPScale = 1;
 delay = -1;
+
+hitchBGM = -4;
+hitchBGMTimer = 0;
+hitchBGMStarted = false;
 </string>
           </argument>
         </arguments>
@@ -113,8 +117,9 @@ if (!global.muteSFX){
             <string>if (global.practicing &amp;&amp; global.practiceWaypointEnd == 2){
     scrPracticeEnd();
 }else{
-    room_goto(rGeezerHitchcock);
     global.hitchAutostart = true;
+    global.hitchTransitionTime = hitchBGMTimer + (0.5);  // clamped in objHitchCtrl Create Event
+    room_goto(rGeezerHitchcock);
 }
 </string>
           </argument>
@@ -138,8 +143,11 @@ if (!global.muteSFX){
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Music
-scrPlayMusic(global.BGMBoss2b, 0);
+            <string>/// Hitchcock BGM
+global.currentMusicID = -4;
+hitchBGM = scrPlayMusic(global.BGMBoss2b, 0, true);
+hitchBGMTimer = 0;
+hitchBGMStarted = true;
 global.currentMusic = -1;
 </string>
           </argument>
@@ -294,6 +302,15 @@ alarm[0] = 2;
 }else if (targetGeezer){ //player is dead
     image_alpha -= 0.04;
     if (image_alpha &lt;= 0) instance_destroy();
+}
+
+// keep track of Hitchcock BGM
+if (!targetGeezer &amp;&amp; hitchBGMStarted){
+    var _inc = 0.5;  // needed for old avoidance system
+    hitchBGMTimer += 1/2;
+    if (audio_is_playing(hitchBGM) &gt;= 0 &amp;&amp; hitchBGMTimer &gt;= 0 &amp;&amp; abs(audio_sound_get_track_position(hitchBGM) - (hitchBGMTimer-_inc)/(50*_inc)) &gt; 0.08){
+        audio_sound_set_track_position(hitchBGM, (timer-_inc)/(50*_inc));
+    }
 }
 </string>
           </argument>

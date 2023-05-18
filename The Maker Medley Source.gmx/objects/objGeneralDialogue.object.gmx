@@ -29,7 +29,8 @@
 textDelay = 0;
 textLength = 0;
 soundDelay = 2;
-textTimer = 0; //affects sound as well
+textTimer = 0;
+soundTimer = 0;
 textPosition = 0;
 disclaimer = false;
 subMessage = 0;
@@ -200,8 +201,8 @@ switch(room){
                 case 3.25:
                 case 3.75:
                     text += "...";
-                    textDelay = 20;
-                    soundDelay = 20;
+                    textDelay = 15;
+                    soundDelay = 15;
                     break;
                 case 3.5:
                     text += " Umm";
@@ -210,8 +211,10 @@ switch(room){
                 case 3.8:
                     text += "#Well,";
                 case 4.0:
-                    text += " I guess we'll have to replace this stage.#If we can't even have blue thwomps, making Nintendo™*#references would be out of th-";
+                    text += " I guess we'll have to replace this stage.#If we can't even have blue thwomps, making Nintendo™*#references would be out of th";
                     textPosition ++;
+                    textDelay = 1.5;
+                    soundDelay = 1.5;
                     break;
                 case 5.0:
                     text = "DIE DIE DIE";
@@ -225,11 +228,11 @@ switch(room){
             textDelay = 0;
             switch(subMessage){
                 case 0:
-                    alarm[1] = 50;
+                    alarm[1] = 30;
                     subMessage = 0.3;
                     break;
                 case 0.3:
-                    alarm[1] = 40;
+                    alarm[1] = 30;
                     subMessage = 0.6;
                     break;
                 case 0.6:
@@ -237,7 +240,7 @@ switch(room){
                     subMessage = 1;
                     break;
                 case 1:
-                    alarm[1] = 40;
+                    alarm[1] = 24;
                     subMessage = 1.5;
                     break;
                 case 1.5:
@@ -245,11 +248,11 @@ switch(room){
                     subMessage = 2;
                     break;
                 case 2:
-                    alarm[1] = 65;
+                    alarm[1] = 30;
                     subMessage = 2.5;
                     break;
                 case 2.5:
-                    alarm[1] = 50;
+                    alarm[1] = 15;
                     subMessage = 3;
                     break;
                 case 3:
@@ -303,12 +306,11 @@ switch(room){
                     textPosition += 1;
                     break;
                 case 2.5:
-                    text += "#you will witness the power...";
-                    textPosition += 1;
+                    text += "you will witness the power...";
                     break;
                 case 2.75:
-                    text += "#of medleys!";
-                    textPosition += 1;
+                    text += "##of medleys!";
+                    textPosition += 2;
                     textDelay = 6;
                     soundDelay = 6;
                     break;
@@ -429,8 +431,8 @@ switch(room){
                     textPosition += 2;
                     break;
                  case 3.3:
-                    text += "#Does my mere existence upset you that much?";
-                    textPosition ++;
+                    text += "##Does my mere existence upset you that much?";
+                    textPosition += 2;
                     break;
                  case 4:
                     speakerSprite = sprPlayerHead;
@@ -459,12 +461,12 @@ switch(room){
                     textPosition = 0;
                     break;
                  case 5.1:
-                    text += "##Why are you so determined to cast me as a villan?";
-                    textPosition += 2;
+                    text += "#Why are you so determined to cast me as a villan?";
+                    textPosition += 1;
                     break;
                  case 5.2:
-                    text += "#My fanworks do not hurt the original creators in any way.";
-                    textPosition ++;
+                    text += "##My fanworks do not hurt the original creators in#any way.";
+                    textPosition += 2;
                     break;
                  case 5.3:
                     text = "If anything, they should be delighted.";
@@ -539,7 +541,7 @@ switch(room){
                     break;
                  case 8.2:
                     text = string_copy(text, 1, string_length(text)-1) + ",";  // replace the last exclamation point with a comma
-                    text += " and a thief!";
+                    text += "#and a thief!";
                     textPosition ++;
                     
                     textDelay = 2;
@@ -902,7 +904,7 @@ switch(room){
                     subMessage = 16;
                     break;
                 case 16:
-                    alarm[1] = 28;
+                    alarm[1] = 36;
                     subMessage = 17;
                     break;
                 case 17:
@@ -958,15 +960,18 @@ switch(room){
     }
     y = lerp(ystart, yTo, sin(lerpVal));
 }else{
-    if (textPosition &lt; textLength &amp;&amp; textDelay != 0){
+    if (textPosition &lt; textLength &amp;&amp; textDelay &gt; 0){
         textTimer ++;
-        if (textTimer &gt;= textDelay){
-            if (textDelay &lt; 1 &amp;&amp; textDelay &gt; 0) textPosition += floor(1/textDelay);
-            else textPosition ++;
+        soundTimer ++;
+        
+        // advance dialogue
+        while (textTimer &gt;= textDelay){
+            textPosition ++;
             if (textPosition &gt;= textLength){
+                // cap text position
                 textPosition = textLength;
-                var t_sound = audio_play_sound(sndGeneralDialogue, 0, 0);
-                audio_sound_pitch(t_sound, random_range(1, 1.15));
+                
+                // set up next part
                 if (subMessage &gt;= 0 &amp;&amp; room != rGeezerHitchcock){
                     alarm[1] = -1;
                     event_perform(ev_alarm, 1);
@@ -977,12 +982,19 @@ switch(room){
                         alarm[2] = 60;
                     }
                 }
+                
+                soundTimer = soundDelay;  // immediately play one sound effect
+                textTimer = 0;
+                break;  // end while loop
             }
-            textTimer = 0;
+            textTimer -= textDelay;
         }
-        if (textTimer mod soundDelay == 0 &amp;&amp; textPosition != textLength){
+        
+        // advance sound effect position
+        if (soundTimer &gt;= soundDelay){
             var t_sound = audio_play_sound(sndGeneralDialogue, 0, 0);
             audio_sound_pitch(t_sound, random_range(1, 1.15));
+            soundTimer = min(soundTimer - soundDelay, soundDelay);  // avoid issues with... fractional soundDelays??? idk
         }
     }/*else if ((scrButtonCheckPressed(global.shootButton) || scrButtonCheckPressed(global.jumpButton)) &amp;&amp; alarm[1] &gt; 0 &amp;&amp; room != rGeezerHitchcock){
         alarm[1] = -1;

@@ -137,8 +137,9 @@ if (openAmt &gt; 0){
         t_fade.fadeIn = 0.03;
         t_fade.fadeOut = 0;
         alarm[4] = 140/3;
-    }else
+    }else{
         alarm[2] = 5;
+    }
 }
 </string>
           </argument>

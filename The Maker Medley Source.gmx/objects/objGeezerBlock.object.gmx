@@ -3,7 +3,7 @@
   <spriteName>sprGeezerBlock</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>100</depth>
+  <depth>-7</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -26,7 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>blockAlpha = 1; //Changes slightly to create flickering effect
-blockAlphaMult = 0; //Used for fade effects
+blockAlphaMult = 0; //Used for overlay fade
 blockFade = 0;
 blockSprite = sprGeezerBlock;
 blockIndex = 0;
@@ -119,13 +119,14 @@ alarm[0] = irandom_range(5, 7);
           <argument>
             <kind>1</kind>
             <string>var _x = (x+drawXOff), _y = (y+drawYOff);
+var _alpha; _alpha = min(blockAlpha, 1);
 if (blockSprite != sprGeezerBlock || pacman){
-    draw_sprite_ext(sprite_index, image_index, _x, _y, image_xscale, image_yscale, image_angle, image_blend, image_alpha);
-    draw_set_alpha(min(blockAlpha, 1)*blockAlphaMult);
-    if (!pacman) draw_sprite(blockSprite, blockIndex, _x, _y);
+    draw_sprite_ext(sprite_index, image_index, _x, _y, image_xscale, image_yscale, image_angle, image_blend, _alpha);
+    draw_set_alpha(_alpha*blockAlphaMult);
+    if (!pacman){draw_sprite(blockSprite, blockIndexArr[i, j], _x, _y);}
     else draw_background_part(tlGeezerPacman, pacLeft, pacTop, 32, 32, _x, _y);
 }else{ //pre-boss / between phases / survival
-    draw_set_alpha(blockAlpha);
+    draw_set_alpha(_alpha*blockAlphaMult);
     draw_sprite(sprite_index, 0, _x, _y);
 }
 draw_set_alpha(1);

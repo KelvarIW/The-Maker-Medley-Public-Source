@@ -3,7 +3,7 @@
   <spriteName>sprGeezerPacPhantom</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>-7</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -127,53 +127,103 @@ move_towards_point(400, 272, 4);
             chase = true; //will run following block
         }
     }
-    if (chase){ //chase means active
-        if (!frightened &amp;&amp; !eaten &amp;&amp; !(x &gt; 288 &amp;&amp; x &lt; 512 &amp;&amp; y &gt; 320 &amp;&amp; y &lt; 384)){
+    if (chase){  // chase means active, scatter overrides position
+        var _inBox = (x &gt; 288 &amp;&amp; x &lt; 512 &amp;&amp; y &gt; 320 &amp;&amp; y &lt; 384);
+        
+        var _scatterOverride = false;
+        if (instance_exists(objGeezerPacCtrl)){
+            _scatterOverride = objGeezerPacCtrl.scatter;
+        }
+        // Blinky "scatter mode" override
+        if (_scatterOverride &amp;&amp; color == 0){
+            if (!buff() &amp;&amp; instance_number(objMakerCoin) &lt;= 20){  // chase relentlessly if &lt;= 20 coins
+                _scatterOverride = false;
+            }else if (buff() &amp;&amp; instance_number(objMakerCoin) &lt;= 30){  // BUFF: threshold raised to &lt;= 30 coins
+                _scatterOverride = false;
+            }
+        }
+        
+        if (!_inBox &amp;&amp; (!frightened &amp;&amp; !eaten)){  // `fightened` and `eaten` checks are a relic from development
             if ((hspeed &lt; 0 &amp;&amp; x &lt;= tileX*32 - 16) || (hspeed &gt; 0 &amp;&amp; x &gt;= tileX*32 + 48) || (vspeed &lt; 0 &amp;&amp; y &lt;= tileY*32 - 16) || (vspeed &gt; 0 &amp;&amp; y &gt;= tileY*32 + 48)){
                 tileX = x div 32;
                 tileY = y div 32;
                 if (hspeed != 0) x = tileX*32 + 16;
                 if (vspeed != 0) y = tileY*32 + 16;
-                if (instance_exists(objPlayer)){
-                    if (objPlayer.y &lt; objPlayer.yprevious) playerDir = 90;
-                    else playerDir = 90 - 90*objPlayer.xScale;
-                    
-                    targetX = objPlayer.x div 32;
-                    targetY = objPlayer.y div 32;
-                    
-                    switch(color){ //Fuck it we're doing Pac-Man AI
-                        //case 0: //Blinky
-                        //    break;
-                        case 1: //Pinky
-                            //If the Player is facing left, targetX -= 4
-                            //If the Player is facing left, targetX += 4
-                            //If the Player is facing up, targetX -= 4 &amp; targetY -= 4
-                            
-                            if (playerDir == 90) targetY -= 4;
-                            if (playerDir == 0) targetX += 4;
-                            else targetX -= 4;
+                
+                if (_scatterOverride){  // must use local variable for Blinky behavior
+                    switch(color){  // same corners as Pac-Man AI 
+                        case 0:  // Blinky
+                            targetX = 24;
+                            targetY = 0;
+                        break;
+                        case 1:  // Pinky
+                            targetX = 0;
+                            targetY = 0;
+                        break;
+                        case 2:  // Inky
+                            targetX = 24;
+                            targetY = 18;
+                        break;
+                        case 3:  // Clyde
+                            targetX = 0;
+                            targetY = 18;
+                        break;
+                    }
+                }else{
+                    if (instance_exists(objPlayer)){
+                        if (abs(objPlayer.vspeed) &gt;= 1){
+                            if (objPlayer.vspeed &lt; 0){
+                                playerDir = 90;
+                            }else{
+                                playerDir = 270;
+                            }
+                        }else{
+                            playerDir = 90 - 90*objPlayer.xScale
+                        }
+                        
+                        targetX = objPlayer.x div 32;
+                        targetY = objPlayer.y div 32;
+                        
+                        switch(color){  // we're doing Pac-Man AI
+                            case 0:  // Blinky
+                                targetX = objPlayer.x div 32;
+                                targetY = objPlayer.y div 32;
                             break;
-                        case 2: //Inky
-                            //Half of Pinky's offset, + vector from Player to Blinky rotated 180
-                            if (playerDir == 90) targetY -= 2;
-                            if (playerDir == 0) targetX += 2;
-                            else targetX -= 2;
-                            with (object_index){
-                                if (color == 0){ //Blinky
-                                    other.targetX -= (x - objPlayer.x) div 32; //no need for trigonometry
-                                    other.targetY -= (y - objPlayer.y) div 32; //180 degree rotation = (-x, -y)
+                            case 1:  // Pinky
+                                //If the Player is facing left, targetX -= 4
+                                //If the Player is facing right, targetX += 4
+                                //If the Player is facing up, targetX -= 4 &amp; targetY -= 4
+                                
+                                if (playerDir == 90) targetY -= 4;
+                                if (playerDir == 0){targetX += 4;}else{targetX -= 4;}
+                            break;
+                            case 2:  // Inky
+                                //Half of Pinky's offset, + vector from Player to Blinky rotated 180
+                                if (playerDir == 90) targetY -= 2;
+                                if (playerDir == 0) targetX += 2;
+                                else targetX -= 2;
+                                with (object_index){
+                                    if (color == 0){ //Blinky
+                                        other.targetX -= (x - objPlayer.x) div 32; //no need for trigonometry
+                                        other.targetY -= (y - objPlayer.y) div 32; //180 degree rotation = (-x, -y)
+                                    }
                                 }
-                            }
                             break;
-                        case 3: //Clyde
-                            if (point_distance(x, y, objPlayer.x - 17, objPlayer.y - 23) &lt;= 256){//8 tiles or fewer
-                                targetX = 0;
-                                targetY = 18;
-                            }
+                            case 3:  // Clyde
+                                if (point_distance(x, y, objPlayer.x, objPlayer.y) &lt;= 256){  // 8 tiles or fewer
+                                    targetX = 0;
+                                    targetY = 18;
+                                }else{
+                                    targetX = roundSane(objPlayer.x / 32);
+                                    targetY = roundSane(objPlayer.y / 32);
+                                }
                             break;
+                        }
                     }
                 }
-                event_user(0);
+                
+                
+                event_user(0);  // Tile-Based Movement (after calculating new target
             }
         }
         speed = 3;

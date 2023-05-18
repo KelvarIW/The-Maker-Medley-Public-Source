@@ -26,7 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>introTimer = -30;
-currency = 10;
+currency = 20;  // 20 coins as initial amount
 coinTimer = 250;  // after planting first plant
 coinsDropped = 0; // from ceiling
 
@@ -637,12 +637,12 @@ if (coinTimer &gt;= 0){
             
             with (instance_create(192 + ((floor(visual_psuedoRNGVal) mod 60) div 10)*64, -32, objPlantsCoin)){
                 hspeed = 0;
-                vspeed = 3;
+                vspeed = 4;
                 brightness = 0;
                 yBase = 192 + ((floor(other.visual_psuedoRNGVal*3.93) mod 60) div 10)*64;
             }
             coinsDropped ++;
-            coinTimer = min(15.50, 4.25 + (coinsDropped * 0.85)) * 50;
+            coinTimer = min(10.50, 4.25 + (coinsDropped * 0.85)) * 50;
         }
     }
 }
@@ -667,12 +667,6 @@ if (coinTimer &gt;= 0){
           <argument>
             <kind>1</kind>
             <string>///PvZ2 Speed Up button
-if (global.debugInfJump){
-    with (objPlantsEnemy){
-        event_user(2);
-    }
-}
-
 if (speedChangeDelay &lt;= 0 &amp;&amp; introTimer &gt;= 150 &amp;&amp; (mouse_x &gt; speedButtonX &amp;&amp; mouse_x &lt; (speedButtonX+64) &amp;&amp; mouse_y &gt;= 16 &amp;&amp; mouse_y &lt;= 80) &amp;&amp; mouse_check_button_pressed(mb_left) &amp;&amp; !global.dead){
     if (roundState &gt;= 1 &amp;&amp; roundState &lt; 3){
         speedUp = !speedUp;
@@ -1548,7 +1542,7 @@ plantCost[4] = 50;
 plantCost[3] = 30;
 plantCost[2] = 45;
 plantCost[1] = 25;
-plantCost[0] = 10;
+plantCost[0] = 15;
 
 iconSpr[5] = sprMakerActivator;
 iconSpr[4] = sprPlantsShurikenSmall;

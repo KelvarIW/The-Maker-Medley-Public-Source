@@ -301,7 +301,7 @@ if (_risePos &gt; _tipBaseHeight){
         gore[1].image_xscale = 2;
         gore[1].image_yscale = 2;
         gore[1].val1 = (gore[0].val1 div 2);  // top = gore[0].height
-        gore[1].val2 = _spikeGoreMinHeight;  // height
+        gore[1].val2 = (_risePos - _tipBaseHeight);  // height
         gore[1].y = (_moundY - _risePos) + (_tipBaseHeight + ceil(gore[1].val2/2));
     /*}else if (_risePos &lt; (_tipBaseHeight + _spikeGoreMinHeight) + 8){  // tip does not have flat base
         gore[1] = instance_create(x, y, objPlantsParts);
@@ -417,9 +417,8 @@ if (!dead || crushed){
     scrPlantsCrushEnd(crushTimer);
 }else{
     event_inherited();
-    if (moundAlpha &gt; 0){
-        //originally faded out; now shrinks vertically
-        draw_sprite_ext(sprPlantsMound, 0, x, _moundY, (0.3 + 1.18*_riseAmt), min(moundAlpha*1.28, 1) * _riseAmt, 0, c_white, 1);
+    if (moundAlpha &gt; 0){  // mound alpha fade out
+        draw_sprite_ext(sprPlantsMound, 0, x, _moundY, (0.3 + 1.18*_riseAmt), _riseAmt, 0, c_white, min(moundAlpha*1.28, 1));
     }
 }
 </string>

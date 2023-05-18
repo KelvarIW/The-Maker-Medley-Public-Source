@@ -342,7 +342,7 @@ if (instance_exists(objPlayer)){
                 var _num, _spacing;
                 
                 if (buff()){
-                    _num = 24;
+                    _num = 20;
                 }else{
                     _num = 14;
                 }

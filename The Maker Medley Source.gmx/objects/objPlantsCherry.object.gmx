@@ -143,12 +143,12 @@ if (killing){
             if (attackingTimer == 6){
                 image_index = 0;
             }
-            x -= attackingTimer/3;
+            x -= attackingTimer/1.5;
         }else if (attackingTimer &gt;= (attackingTimerLen-6)){
             if (attackingTimer == (attackingTimerLen-6)){
                 image_index = 1;
             }
-            x += (attackingTimerLen-attackingTimer)/3;
+            x += (attackingTimerLen-attackingTimer)/1.5;
         }
     }else if (!dead){
         if (attacking != noone){
@@ -353,7 +353,6 @@ if (!dead || crushed){
         }
     }
 }
-scrPlantsEnemyDrawShield();
 
 scrPlantsCrushEnd(crushTimer);
 y -= _heightOff;

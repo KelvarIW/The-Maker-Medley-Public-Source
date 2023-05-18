@@ -126,11 +126,17 @@ event_user(2);  // Boss Marker Info
           <argument>
             <kind>1</kind>
             <string>//calculate number of boxes shown
+var _popupFocused = (instance_exists(objPopup) &amp;&amp; (objPopup.y &gt;= 120 || objPopup.move != -1));
+var _settingsFocused = (instance_exists(objSettingsMenu) &amp;&amp; (objSettingsMenu.y &lt;= 480 || objSettingsMenu.move != 1));
+var _statsFocused = (room != rTMM_ClearLobby &amp;&amp; instance_exists(objStatsDisplay) &amp;&amp; (objStatsDisplay.y &lt;= 480 || objStatsDisplay.move != 1));
+var _infoFocused = (instance_exists(objTitlePracticeInfo) &amp;&amp; objTitlePracticeInfo.fade != -1);
+var _guiFocused = (_popupFocused || _settingsFocused || _statsFocused || _infoFocused);
+
 event_user(0);
 var _scrollbar = (shownBoss[6] != -1 || numBoxes &gt;= 7);
 if (_scrollbar){
     //scroll speed
-    if (!instance_exists(objPopup) &amp;&amp; !instance_exists(objScreenFade)){
+    if (!_guiFocused &amp;&amp; !instance_exists(objScreenFade)){
         if (mouse_wheel_up() &amp;&amp; mouse_wheel_down()){
             //Do nothing. How/Why would you do this?
         }else if (mouse_wheel_up()){
@@ -157,7 +163,7 @@ if (_scrollbar){
 
 //dragging scroll bar
 if (_scrollbar){
-    if (!instance_exists(objPopup) &amp;&amp; !instance_exists(objScreenFade) &amp;&amp; (!instance_exists(objTitlePracticeInfo) || (instance_exists(objTitlePracticeInfo) &amp;&amp; objTitlePracticeInfo.fade == -1))){
+    if (!_guiFocused &amp;&amp; !instance_exists(objScreenFade)){
         if (((mouse_x &gt;= 688 &amp;&amp; mouse_x &lt; (688 + (scrollbarWidth*scrollbarWidthShown)) &amp;&amp; mouse_y &gt;= 16 &amp;&amp; mouse_y &lt; 16 + 96*6) || scrollClicked == 1)){ //scroll bar
             if (mouse_check_button(mb_left)){
                 var _relativeMouseY = (mouse_y - 16);
@@ -236,7 +242,7 @@ selectedBoss = -1;
 selectedPhase = -1;
 selectedSlot = -1;
 
-if (!instance_exists(objPopup) &amp;&amp; !instance_exists(objScreenFade) &amp;&amp; (!instance_exists(objTitlePracticeInfo) || (instance_exists(objTitlePracticeInfo) &amp;&amp; objTitlePracticeInfo.fade == -1))){
+if (!_guiFocused &amp;&amp; !instance_exists(objScreenFade)){
     if (mouse_x &gt;= 16 &amp;&amp; mouse_x &lt; 688 &amp;&amp; mouse_y &gt;= 16 &amp;&amp; mouse_y &lt; 592){ //level boxes
         for(var i=6; i&gt;=0; i--){
             if (shownBoss[i] &gt;= 0 &amp;&amp; shownPhase[i] &gt;= 0){

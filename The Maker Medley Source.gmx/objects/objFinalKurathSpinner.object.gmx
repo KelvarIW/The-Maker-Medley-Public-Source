@@ -142,7 +142,7 @@ if (!global.dead &amp;&amp; active){
     for(var i=0; i&lt;num; i++){
         _inst = instance_create(x + (len[1]*dcos(dir + (_inc*i))), y + (len[1]*(-dsin(dir + (_inc*i)))), objFinalKurathSpinnerProj);
         _inst.direction = ((dir+dirChange) + (i * _inc) + 90*sign(dirChange)) + random_range(-20, 20);
-        _inst.speed = random_range(9.7, 14.5);
+        _inst.speed = random_range(9.7, 10.5);
         _inst.vspeed = max(_inst.vspeed, -5.75);
         _inst.gravity = (0.18);
         _inst.angleInc = -(_inst.hspeed/2);

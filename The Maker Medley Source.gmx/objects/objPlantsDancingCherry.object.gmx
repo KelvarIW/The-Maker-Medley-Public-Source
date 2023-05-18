@@ -28,16 +28,22 @@
             <string>event_inherited();
 image_index = 1;
 moveDelay = 16;
-moves = 0;
-danced = false;
-danceDelay = 0;
-danceTimer = 0;
 pulseTimer = pi;
 miku = noone;
 mikuXOff = 0;
+// from objPlantsMiku
+runSpd = 0.635;  // moving while in dance formation
+sprintSpd = 2;  // catching up
 flipTo = 1;
-image_xscale = 1;
-image_yscale = 1;
+
+image_xscale = 1; image_yscale = 1;  // from spinner visual
+danceDelay = 0;
+// should match objPlantsMiku
+danceStart = 90; danceEnd = 150;  // for "pause"
+danceCount = 4;  // 4 "flips"
+danceLen = (danceEnd - danceStart)/(danceCount);
+danceTimer = 0;
+danceLoop = 165;
 </string>
           </argument>
         </arguments>
@@ -95,11 +101,18 @@ image_yscale = 1;
     danceTimer ++;
     var _dancePos;
     if (instance_exists(miku) &amp;&amp; !miku.dead &amp;&amp; !killing){
-        _dancePos = ((miku.danceTimer) mod 165);
+        _dancePos = ((miku.danceTimer) mod danceLoop);
     }else{
-        _dancePos = (danceTimer mod 165);
+        _dancePos = (danceTimer mod danceLoop);
     }
-    var _stopMoving = (_dancePos &gt;= 90 &amp;&amp; _dancePos &lt; 150);
+    var _stopMoving = false;  // for the flips
+    if (_dancePos &gt;= danceStart &amp;&amp; _dancePos &lt; danceEnd){  // flip dancing
+        if (instance_exists(miku) &amp;&amp; x &gt; (miku.x + mikuXOff) + 2){  //2 frame leniency
+            _stopMoving = false;  // cherry will "catch up" quicker
+        }else{
+            _stopMoving = true;
+        }
+    }
     
     if (!killing){
         if (instance_exists(attacking)){
@@ -107,22 +120,30 @@ image_yscale = 1;
                 if (attackingTimer == 6){
                     image_index = 0;
                 }
-                x -= attackingTimer/3;
+                x -= attackingTimer/1.5;
             }else if (attackingTimer &gt;= (attackingTimerLen-6)){
                 if (attackingTimer == (attackingTimerLen-6)){
                     image_index = 1;
                 }
-                x += (attackingTimerLen-attackingTimer)/3;
+                x += (attackingTimerLen-attackingTimer)/1.5;
             }
             flipTo = 1;
-        }else if (!_stopMoving || !instance_exists(miku)){
-            var _move = 0.75;
+        }else if (!_stopMoving){
+            var _move = 0;
             
-            if (!instance_exists(miku) || miku.dead || (x - _move) &gt;= miku.x + mikuXOff || killing){
-                x -= _move;
-            }else if (instance_exists(miku) &amp;&amp; (miku.sprite_index == sprPlantsMikuRun &amp;&amp; abs(x - (miku.x + mikuXOff)) &lt;= _move)){
-                x = (miku.x + mikuXOff);
+            if (!instance_exists(miku)){
+                _move = runSpd;
+            }else{
+                if (miku.dead){  // post-formation movement
+                    _move = runSpd;
+                }else if ((x - sprintSpd) &gt;= miku.x + mikuXOff || killing){  // catching up with formation, or player is dead (no need to make them wait)
+                    _move = sprintSpd;
+                }else if (abs(x - (miku.x + mikuXOff)) &lt;= sprintSpd){
+                    x = roundSane(miku.x + mikuXOff);
+                }
             }
+            
+            x -= _move;
         }
     }
     
@@ -134,7 +155,7 @@ image_yscale = 1;
                 if ((_dancePos == 8 || _dancePos == 28 || _dancePos == 50 || _dancePos == 70) &amp;&amp; pulseTimer &gt;= pi){
                     pulseTimer = 0;
                 }else if (_stopMoving){
-                    if ((_dancePos &gt;= 90 &amp;&amp; _dancePos &lt; 112) || (_dancePos &gt;= 130 &amp;&amp; _dancePos &lt; 150)){
+                    if ((_dancePos &gt;= danceStart &amp;&amp; _dancePos &lt; (danceStart + danceLen)) || (_dancePos &gt;= (danceStart + 2*danceLen) &amp;&amp; _dancePos &lt; (danceStart + 3*danceLen))){
                         flipTo = -1;
                     }else{
                         flipTo = 1;

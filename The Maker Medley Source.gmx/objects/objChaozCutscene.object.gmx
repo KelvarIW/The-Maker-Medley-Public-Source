@@ -250,11 +250,13 @@ if (surface_exists(surf))
           <argument>
             <kind>1</kind>
             <string>if (room != rChaozB)
-    instance_destroy();
+    instance_destroy(id, false);
 else{
-    with (objBlock)
-        if (y == 608 &amp;&amp; image_xscale == 25)
+    with (objBlock){
+        if (y == 608 &amp;&amp; image_xscale == 25){
             instance_destroy();
+        }
+    }
     (instance_create(0, 608, objBlock)).image_xscale = 11;
     (instance_create(448, 608, objBlock)).image_xscale = 11;
 }

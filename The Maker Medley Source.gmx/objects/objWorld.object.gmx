@@ -52,7 +52,7 @@ bkYScrollAmt = 0;
 //Music
 playMusic = true; //disable to prevent looping music from playing again once it is stopped
 playIntro = true;
-musicToPlay = -2; //-2 = Set based on room
+musicToPlay = noone; //noone = Set based on room
 createMusicIdent = true;
 pausedSong = noone;
 //Audio Groups
@@ -280,7 +280,7 @@ playMusic = false;
 if (playMusic &amp;&amp; !global.muteMusic &amp;&amp; musicToPlay != -1){
     var _loopSong = noone;
     var _introLength = 0;
-    if (musicToPlay &lt; 0){
+    if (musicToPlay &lt; 0 &amp;&amp; musicToPlay != -2){  // -1 stop BGM, -2 = ignore BGM, -4 = based on room
         switch(room){
             case rTitle:
             case rMenu:
@@ -333,20 +333,20 @@ if (playMusic &amp;&amp; !global.muteMusic &amp;&amp; musicToPlay != -1){
                 break;
         }
     }else{
-        _loopSong = musicToPlay
+        _loopSong = musicToPlay;
     }
     if (_loopSong != noone &amp;&amp; _loopSong != -1){
         if (_loopSong &gt;= 0){
             //looping
             switch(_loopSong){
                 case global.BGMStage2a:
-                    _introLength = 46.40;
+                    _introLength = 90;
                     break;
                 case global.BGMBoss2a:
                     _introLength = 0.56;
                     break;
                 case global.BGMBoss2c:
-                    _introLength = 5.34;
+                    _introLength = 5.35;
                     break;
                 case global.BGMStage3a:
                     //_introLength = 101.372;
@@ -426,7 +426,7 @@ if (audio_exists(global.musicFading)){
     if (global.musFadeMultiplier &gt; 0){
         global.musFadeMultiplier = max(global.musFadeMultiplier - global.musicFadeDec, 0);
         if (global.musFadeMultiplier &lt;= 0){
-            if (musicToPlay == -2 || audio_is_playing(global.musicFading)){
+            if (musicToPlay == noone || audio_is_playing(global.musicFading)){
                 musicToPlay = -1;
             }
             if (global.musicFadeEnd == "pause"){
@@ -1254,7 +1254,7 @@ alarm[3] = -1;
 global.dead = false;
 global.deathSlow = 1;
 playMusic = true;
-musicToPlay = -2;
+musicToPlay = noone;
 global.shield = 0;
 global.infJump = false;
 global.musicFading = -1;
@@ -1318,9 +1318,10 @@ if (room != rInit){
         global.playerScale = 1;
         switch(room){
             case rStage01Abstr4ktNew:
-            case rStage01Patrick:
             case rStage01Kurath:
             case rStage01Zilily:
+            case rStage01Patrick:
+            case rStage01Ace:
             case rStage02Shark2:
             case rStage02Erik:
             case rStage02Telejump:

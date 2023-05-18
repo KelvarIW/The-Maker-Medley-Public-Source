@@ -377,7 +377,7 @@ if (state == 2){
             _inst = instance_create(x, y, objFinalLarryCoin);
             _inst.image_blend = coinImageBlend;
             
-            if (buff()){coinTimer = 1;}else{coinTimer = 2;}
+            if (buff()){coinTimer = 2;}else{coinTimer = 3;}
         }else{
             coinTimer --;
         }

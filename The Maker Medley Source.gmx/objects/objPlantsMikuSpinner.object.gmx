@@ -2,7 +2,7 @@
 <object>
   <spriteName>sprPlantsSpinner</spriteName>
   <solid>0</solid>
-  <visible>-1</visible>
+  <visible>0</visible>
   <depth>0</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
@@ -127,7 +127,7 @@ slotDistance = 0;
                                         var _inst = instance_create(x + slotDistance*dcos(_ang), y + slotDistance*(-dsin(_ang)), objPlantsGore);
                                         _inst.sprite_index = sprCherry;
                                         _inst.state = 1;
-                                        _inst.row = row - round(-dsin(_ang));
+                                        _inst.row = row + round(-dsin(_ang));
                                         _inst.fromEnemy = false;
                                         with(_inst){event_perform(ev_alarm, 0);}
                                         
@@ -139,7 +139,7 @@ slotDistance = 0;
                                             var _inst = instance_create(x + slotDistance*dcos(_ang), y + slotDistance*(-dsin(_ang)), objPlantsGore);
                                             _inst.sprite_index = sprCherry;
                                             _inst.state = 0;
-                                            _inst.row = row - round(-dsin(_ang));
+                                            _inst.row = row + round(-dsin(_ang));
                                             _inst.fromEnemy = false;
                                             with(_inst){event_perform(ev_alarm, 0);}
                                             
@@ -167,7 +167,7 @@ slotDistance = 0;
                                             var _inst = instance_create(x + slotDistance*dcos(_ang), y + slotDistance*(-dsin(_ang)), objPlantsGore);
                                             _inst.sprite_index = sprCherry;
                                             _inst.state = 1;
-                                            _inst.row = row - round(-dsin(_ang));
+                                            _inst.row = row + round(-dsin(_ang));
                                             _inst.fromEnemy = false;
                                             with(_inst){event_perform(ev_alarm, 0);}
                                             
@@ -179,12 +179,11 @@ slotDistance = 0;
                                             
                                         }else{
                                             glowFrame[i] = glowLen;
-                                            
                                             if (slotHP[i] &lt;= 3 &amp;&amp; _prevHP &gt; 3){
                                                 var _inst = instance_create(x + slotDistance*dcos(_ang), y + slotDistance*(-dsin(_ang)), objPlantsGore);
                                                 _inst.sprite_index = sprCherry;
                                                 _inst.state = 0;
-                                                _inst.row = row - round(-dsin(_ang));
+                                                _inst.row = row + round(-dsin(_ang));
                                                 _inst.fromEnemy = false;
                                                 with(_inst){event_perform(ev_alarm, 0);}
                                                 
@@ -232,8 +231,8 @@ slotDistance = 0;
                             _inst.angleInc *= sign(_inst.hspeed);
                         }else{
                             _inst = instance_create(x + slotDistance*dcos(_ang), y + slotDistance*(-dsin(_ang)), objPlantsDancingCherry);
-                            _inst.row = row - round(dcos(90*i));
-                            _inst.mikuXOff = slotDistance*round(dcos(_ang));
+                            _inst.row = row + round(-dsin(_ang));
+                            _inst.mikuXOff = slotDistance*(dcos(_ang));
                             _inst.image_xscale = 1;
                             _inst.image_yscale = 1;
                             _inst.miku = miku;
@@ -312,7 +311,10 @@ if (surface_exists(surf)){
             if (slotHP[i] &lt;= 3){
                 _spr = sprPlantsCherry;
             }
-            draw_sprite(sprCherry, 0, 128 + slotDistance*_cosVal, 128 + slotDistance*_sinVal);
+            var _xx, _yy;
+            _xx = 128 + slotDistance*_cosVal;
+            _yy = 128 + slotDistance*_sinVal;
+            draw_sprite(sprCherry, 0, _xx, _yy);
             
             if (glowFrame[i] &gt; 0){
                 var _glowAlpha = scrPlantsGlow(glowFrame[i], glowLen);
@@ -320,7 +322,7 @@ if (surface_exists(surf)){
                 if (_spr == sprPlantsCherry){
                     _glowInd += 2;
                 }
-                draw_sprite_ext(sprPlantsCherryHit, _glowInd, x, y, 1, 1, 0, c_white, _glowAlpha);
+                draw_sprite_ext(sprPlantsCherryHit, _glowInd, _xx, _yy, 1, 1, 0, c_white, _glowAlpha);
             }
         }
         

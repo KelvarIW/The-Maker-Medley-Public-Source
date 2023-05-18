@@ -168,6 +168,12 @@ if (instance_exists(objPlantsCtrl)){
             }
         }
         
+        with (objPlantsEnemy){
+            if (row == _drawingRow){
+                scrPlantsEnemyDrawShield();  // needed for death effect
+            }
+        }
+        
         with (objPlantsEnemyBullet){
             if (row == _drawingRow){
                 draw_self();

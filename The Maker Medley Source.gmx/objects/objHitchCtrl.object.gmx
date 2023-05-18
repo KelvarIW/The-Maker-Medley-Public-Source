@@ -42,6 +42,17 @@ if (global.hitchAutostart){
     if (global.shieldHitsTaken == 0){
         global.geezerPart1Nohit = true;  // needed because of autosave
     }
+    timer = clamp(global.hitchTransitionTime, 0, 69 - 0.5);  // timer = 69 spawns the cursor
+    
+    // timer = 56.5 action:
+    if (instance_exists(objPlayer)){
+        objPlayer.frozen = true;
+    }
+    with (objMakerBossSave){
+        instance_destroy();
+    }
+    //
+    
 }
 global.hitchAutostart = false;
 usePracticeSystem = false; //this is part of a larger fight

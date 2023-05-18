@@ -12,6 +12,7 @@ global.BGMStage3c    = audio_create_stream("Music/Stage3C.ogg");
 global.BGMStage3c2   = audio_create_stream("Music/Stage3C2.ogg");
 global.BGMStage4     = audio_create_stream("Music/Stage4.ogg");
 global.BGMBoss1      = audio_create_stream("Music/Boss1.ogg");
+global.BGMBoss2Intro = audio_create_stream("Music/Boss2Intro.ogg");
 global.BGMBoss2a     = audio_create_stream("Music/Boss2A.ogg");
 global.BGMBoss2b     = audio_create_stream("Music/Boss2B.ogg");
 global.BGMBoss2c     = audio_create_stream("Music/Boss2C.ogg");

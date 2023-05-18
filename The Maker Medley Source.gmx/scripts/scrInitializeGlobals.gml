@@ -236,6 +236,7 @@ for(var i=3;i>=0;i--;){ // [index 3] is for stage 4
 global.abstr4ktGrav = 0;
 global.saveAbstr4ktGrav = 0;
 global.hitchAutostart = false;
+global.hitchTransitionTime = 0;
 global.playElevator = false; //animation in the first NANG room (after the transition)
 global.flappyStarted = false;
 global.scribbleP4LastDeath = -1;

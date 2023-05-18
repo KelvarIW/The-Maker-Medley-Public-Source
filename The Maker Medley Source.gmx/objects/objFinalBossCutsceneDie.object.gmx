@@ -56,6 +56,7 @@ with (objGeneralDialogue){
     movingDown = true;
     alarm[1] = 1;
 }
+audio_play_sound(sndFinalRNGPowerDown, 0, 0);
 grow = false;
 shrink = true;
 ystart = y;

@@ -74,7 +74,6 @@ y -= 12;
             hspeed += 0.17;
             if (bbox_left &gt; 800){
                 instance_destroy();
-                show_debug_message(instance_number(object_index));
             }
         }
     }else if (timer &lt; 88){
