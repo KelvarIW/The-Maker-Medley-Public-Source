@@ -461,7 +461,7 @@ switch(room){
                     textPosition = 0;
                     break;
                  case 5.1:
-                    text += "#Why are you so determined to cast me as a villan?";
+                    text += "#Why are you so determined to cast me as a villain?";
                     textPosition += 1;
                     break;
                  case 5.2:
@@ -505,7 +505,8 @@ switch(room){
                     textPosition ++;
                     break;
                  case 7.2:
-                    text += '"mediocrity';
+                    text += ' "mediocrity';
+                    textPosition ++;
                     textPosition ++;
                     break;
                  case 7.3:
@@ -529,7 +530,7 @@ switch(room){
                         targetObject = objPlayer;
                         event_user(0);
                     }
-                    text = "Under current (as of February 2023) United States copyright law,";
+                    text = "Under current (as of February 2023) United#States copyright law,";
                     textPosition = 0;
                     break;
                  case 8.1:
