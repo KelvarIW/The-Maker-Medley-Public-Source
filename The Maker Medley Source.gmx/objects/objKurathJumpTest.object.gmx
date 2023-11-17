@@ -58,27 +58,44 @@ var _totalAll = (_totalSep + _totalJ1 + _totalJ2);
 nextJumpX = 64;
 nextJumpY = 304;
 spawn = 3;
-for (var i=0; i&lt;_totalAll; i++){
-    if (i &lt; _totalSep){
-        spawn = i;
-        with (instance_create(nextJumpX, nextJumpY, objTempJumpIdent)){pool = 0; num = other.spawn;}
-        event_perform_object(objFinalKurath, ev_other, ev_user0);
-    }else if (i &lt; _totalSep + _totalJ1){
-        spawn = (i - _totalSep);
-        with (instance_create(nextJumpX, nextJumpY, objTempJumpIdent)){pool = 1; num = other.spawn;}
-        event_perform_object(objFinalKurath, ev_other, ev_user1);
-    }else{
-        spawn = (i - (_totalSep + _totalJ1));
-        with (instance_create(nextJumpX, nextJumpY, objTempJumpIdent)){pool = 2; num = other.spawn;}
-        event_perform_object(objFinalKurath, ev_other, ev_user2);
+
+var _setdisplay = false;
+if (_setdisplay){
+    // Display in order
+    for (var i=0; i&lt;_totalAll; i++){
+        if (i &lt; _totalSep){
+            spawn = i;
+            with (instance_create(nextJumpX, nextJumpY, objTempJumpIdent)){pool = 0; num = other.spawn;}
+            event_perform_object(objFinalKurath, ev_other, ev_user0);
+        }else if (i &lt; _totalSep + _totalJ1){
+            spawn = (i - _totalSep);
+            with (instance_create(nextJumpX, nextJumpY, objTempJumpIdent)){pool = 1; num = other.spawn;}
+            event_perform_object(objFinalKurath, ev_other, ev_user1);
+        }else{
+            spawn = (i - (_totalSep + _totalJ1));
+            with (instance_create(nextJumpX, nextJumpY, objTempJumpIdent)){pool = 2; num = other.spawn;}
+            event_perform_object(objFinalKurath, ev_other, ev_user2);
+        }
+        nextJumpY = 304;
+        
+        /*if (nextJumpX &gt;= room_width - 200){
+            nextJumpX = 64;
+            nextJumpY += 256;
+            i -= 1; // allows us to see the transition
+        }*/
     }
-    nextJumpY = 304;
-    
-    /*if (nextJumpX &gt;= room_width - 200){
-        nextJumpX = 64;
-        nextJumpY += 256;
-        i -= 1; // allows us to see the transition
-    }*/
+}else{
+    // Gen randomly
+    var _type;
+    repeat(_totalAll){
+        _type = choose(ev_user0, ev_user1, ev_user2);
+             if (_type == ev_user0){spawn = irandom(_totalSep-1);}
+        else if (_type == ev_user1){spawn = irandom(_totalJ1-1);}
+        else if (_type == ev_user2){spawn = irandom(_totalJ2-1);}
+        event_perform_object(objFinalKurath, ev_other, ev_user2);
+        
+        with (instance_create(nextJumpX, nextJumpY, objTempJumpIdent)){pool = 2; num = other.spawn;}
+    }
 }
 
 with (objMakerSpikeUp){

@@ -172,13 +172,14 @@ if (instance_exists(objPlayer) &amp;&amp; x &lt; room_width - 1200){
     }
     attacksThrown ++;
     
-    if (buff()){
+    // delay buff removed - excessive combined with buffed jumps AND buffed attacks
+    /*if (buff()){
         if (_atk &lt; 2){
             alarm[1] *= 2/3;
         }else{
             alarm[1] = 216;
         }
-    }
+    }*/
 }
 </string>
           </argument>
@@ -678,17 +679,14 @@ switch (spawn)
             
             if (buff()){
                 // block w/ minispikes
-                instance_create((nextJumpX + 48), (nextJumpY - 32)  - 152, objFinalTilesAutomaticBlock);
-                (instance_create((nextJumpX + 48), (nextJumpY - 32)  - 168, objFinalKurathSpikeUp)).mini = true;
-                (instance_create((nextJumpX + 64), (nextJumpY - 32)  - 168, objFinalKurathSpikeUp)).mini = true;
+                instance_create((nextJumpX + 48), (nextJumpY - 32)  - 136, objFinalTilesAutomaticBlock);
+                (instance_create((nextJumpX + 48), (nextJumpY - 32)  - 152, objFinalKurathSpikeUp)).mini = true;
+                (instance_create((nextJumpX + 64), (nextJumpY - 32)  - 152, objFinalKurathSpikeUp)).mini = true;
+                (instance_create((nextJumpX + 32), (nextJumpY - 32)  - 120, objFinalKurathSpikeLeft)).mini = true;
                 (instance_create((nextJumpX + 32), (nextJumpY - 32)  - 136, objFinalKurathSpikeLeft)).mini = true;
-                (instance_create((nextJumpX + 32), (nextJumpY - 32)  - 152, objFinalKurathSpikeLeft)).mini = true;
+                (instance_create((nextJumpX + 80), (nextJumpY - 32)  - 120, objFinalKurathSpikeRight)).mini = true;
                 (instance_create((nextJumpX + 80), (nextJumpY - 32)  - 136, objFinalKurathSpikeRight)).mini = true;
-                (instance_create((nextJumpX + 80), (nextJumpY - 32)  - 152, objFinalKurathSpikeRight)).mini = true;
-                (instance_create((nextJumpX + 48), (nextJumpY - 32)  - 120, objFinalKurathSpikeDown)).mini = true;
-                (instance_create((nextJumpX + 64), (nextJumpY - 32)  - 120, objFinalKurathSpikeDown)).mini = true;
                 // spikes below
-                (instance_create((nextJumpX + 56), (nextJumpY - 32)  - 120, objFinalKurathSpikeUp)).mini = true;
                 instance_create((nextJumpX + 48), (nextJumpY - 32)  - 104, objFinalKurathSpikeDown);
                 
                 // left rhombus
@@ -774,7 +772,7 @@ switch (spawn)
                 (instance_create((nextJumpX + 56), (nextJumpY - 8), objFinalKurathSpikeLeft)).mini = true;
                 instance_create((nextJumpX + 72), (nextJumpY - 24), objFinalKurathSpikeRight);
             }
-            nextJumpX = (nextJumpX + 128);
+            nextJumpX = (nextJumpX + 112);
         }
         break;
     case 8:  // 16 pixel-elevated expanded gate
@@ -896,10 +894,10 @@ switch (spawn)
             // down+right steaks
             if (!buff()){
                 _xOff = 8;
-                _yOff = -20;
+                _yOff = -32;
             }else{
                 _xOff = 4;
-                _yOff = -10;
+                _yOff = -18;
             }
             
             instance_create( nextJumpX       + _xOff, (nextJumpY - 96)   + 2*_YOff, objFinalKurathSpikeLeft);
@@ -1142,7 +1140,7 @@ switch (spawn){
         }
         break;
         
-    case 3:  // Expanded downward plane-
+    case 3:  // Mini-spike downward plane-
         {
             // left platform
             instance_create(nextJumpX, nextJumpY, objFinalTilesAutomaticBlock);
@@ -1305,12 +1303,19 @@ switch (spawn){
             for(var j=-5; j&lt;=0; j++;){
                 instance_create((nextJumpX + 96)  + _XOff, (nextJumpY + 32*j), objFinalTilesAutomaticBlock);
             }
+            // top of R wall
             (instance_create((nextJumpX + 96)  + _XOff, (nextJumpY - 176), objFinalKurathSpikeUp)).mini = true;
             (instance_create((nextJumpX + 112)  + _XOff, (nextJumpY - 176), objFinalKurathSpikeUp)).mini = true;
+            // left of R wall
             instance_create((nextJumpX + 64)  + _XOff, nextJumpY, objFinalKurathSpikeLeft);
+            // right side of R wall
+            instance_create((nextJumpX + 128)  + _XOff, nextJumpY, objFinalTilesAutomaticBlock);
+            if (buff()){
+                instance_create((nextJumpX + 128)  + _XOff, (nextJumpY + 32), objFinalKurathSpikeDown);
+            }
             
-            instance_create((nextJumpX + 32), (nextJumpY + 80 + _YOff), objFinalKurathSpikeRight);
             
+            instance_create((nextJumpX + 32), (nextJumpY + 80), objFinalKurathSpikeRight);
             nextJumpX = (nextJumpX + 144);
             nextJumpY = min(nextJumpY + 80, nextJumpYMax);
         }

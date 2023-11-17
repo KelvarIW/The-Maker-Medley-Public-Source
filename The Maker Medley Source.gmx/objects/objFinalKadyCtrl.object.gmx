@@ -347,7 +347,7 @@ if (timerEvent &gt;= 199 &amp;&amp; timerEvent &lt; 593.5){
         _delay = 2;
     }
     // bottom (first)
-    if ((timerEvent+10) &gt;= 302 &amp;&amp; (timerEvent+10) &lt; 425 &amp;&amp; (timerEvent mod _delay) == 2){
+    if ((timerEvent+10) &gt;= 302 &amp;&amp; (timerEvent+10) &lt; 425 &amp;&amp; (timerEvent mod _delay) == (_delay-1)){
         repeat(1){
             var _inst;
             _inst = instance_create(924, random_range(592, 544), objFinalKadyProj);
@@ -370,7 +370,7 @@ if (timerEvent &gt;= 199 &amp;&amp; timerEvent &lt; 593.5){
     }
     
     //top (second)
-    if ((timerEvent+10) &gt;= 437 &amp;&amp; (timerEvent+10) &lt; 560 &amp;&amp; (timerEvent mod _delay) == 2){
+    if ((timerEvent+10) &gt;= 437 &amp;&amp; (timerEvent+10) &lt; 560 &amp;&amp; (timerEvent mod _delay) == (_delay-1)){
         repeat(1){
             var _inst;
             _inst = instance_create(-124, random_range(16, 64), objFinalKadyProj);
