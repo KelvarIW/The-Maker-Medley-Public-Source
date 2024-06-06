@@ -208,8 +208,8 @@ switch(timerEvent){
             visible = true;  // starting from save point
         }
         createIdent = true;
+        global.finalBossHP[2] = global.finalBossHP[1];
         if (autosave &amp;&amp; !global.practicing){
-            global.finalBossHP[2] = global.finalBossHP[1];
             scrTMM_Autosave(((room_width-800)+400), 535, 3);
         }
         
