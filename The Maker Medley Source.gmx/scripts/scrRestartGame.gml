@@ -25,12 +25,12 @@ _practiceBuff = global.practiceModeBuffed;
 _savenum = global.savenum;
 
 scrInitializeGlobals();
+global.savenum = _savenum;
 
 if (_roomTo == rMenu){
     global.loadGameMenuStart = room;
 }
 global.practiceModeBuffed = _practiceBuff;
-global.savenum = _savenum;
 
 scrLoadGame(true);
 audio_stop_all();

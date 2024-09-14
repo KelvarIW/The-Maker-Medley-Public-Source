@@ -653,10 +653,13 @@ if (erasable &gt;= 1){
             <string>if (!started &amp;&amp; instance_exists(objPlayer)){
     with (objPlayer){
         if (place_meeting(x, y+2*global.grav, objBetterBlock)){
+            // Autosave, then Transfer
             if (other.autosave &amp;&amp; !global.practicing){
                 scrTMM_Autosave(400, 1040, 6);
                 other.autosave = false;
             }
+            scrFinalTransferHP(5, 4);
+            
             other.started = true;
             scrFinalUpdateFarthest();
             
@@ -981,7 +984,6 @@ if (started){
 
 // manage visual effects  +  iframe generousity
 event_inherited();
-
 if (erasable &gt;= 0 &amp;&amp; dying){
     image_index = 1;  // overwrite the image_index set in the parent object's code
 }
@@ -1029,11 +1031,7 @@ if (keyboard_check(vk_up)){
           <argument>
             <kind>1</kind>
             <string>var _hp;
-if (global.practicing){
-    _hp = global.finalBossHPPracticeTemp;
-}else{
-    _hp = global.finalBossHP[currentHPVal];
-}
+_hp = scrFinalGetHP(currentHPVal);
 
 if (_hp &gt; 0 &amp;&amp; erasable == -1 &amp;&amp; bbox_bottom &gt; 0 &amp;&amp; image_alpha &gt;= 1){
     if (iframes &gt; 0){
@@ -1043,11 +1041,7 @@ if (_hp &gt; 0 &amp;&amp; erasable == -1 &amp;&amp; bbox_bottom &gt; 0 &amp;&amp
     }else{
         scrFinalScribbleDamage();
         //update hp value
-        if (global.practicing){
-            _hp = global.finalBossHPPracticeTemp;
-        }else{
-            _hp = global.finalBossHP[currentHPVal];
-        }
+        _hp = scrFinalGetHP(currentHPVal);
         
         if (_hp &lt;= 0){
             if (!global.practicing || global.practiceWaypointEnd &gt; 9){

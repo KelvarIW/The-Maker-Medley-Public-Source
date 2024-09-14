@@ -201,7 +201,9 @@ if (followPlayer){
                 }
             }
         }else if (objPlayer.y &lt; yTo){
-            yTo = max(yTo - 608, minY);
+            if (room != rFinalBoss_4){  // hardcoded exception for Sudnep -&gt; P4 pan
+                yTo = max(yTo - 608, minY);
+            }
         }
         
         if (xTo != _xToOld || yTo != _yToOld){

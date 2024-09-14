@@ -30,6 +30,8 @@ undertale = (room == rFinalBoss_3); //whether to attempt to change the backgroun
 hitchBackCol = make_color_rgb(77, 143, 185); //Sudnep avoidance failsafe
 hitchBackBlendAmt = 0;
 hitchBackDec = false;
+
+finalBackTime = 0;
 </string>
           </argument>
         </arguments>
@@ -107,12 +109,18 @@ if (view_yview &lt; 608 || global.roomSaveTo == 5){  // global.roomSaveTo check 
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (undertale &amp;&amp; global.dead){
+            <string>/// Final Boss Background
+if (undertale &amp;&amp; global.dead){
     //if the player dies during the undertale phase, we shouldn't have the green background visible
     draw_set_colour(c_black);
     draw_rectangle(view_xview-256, view_yview-256, view_xview+1056, view_yview+864, false);
     draw_set_colour(c_white);
 }else{
+    //freeze on Undertale transition
+    var _check = false;
+    if (instance_exists(objFinalPatCtrl)){  if (objFinalPatCtrl.transitionFreeze){  _check=true;  }  }
+    if (!_check){  finalBackTime = global.countPersistent;  }
+    
     if (global.finalBKEnabled &amp;&amp; (!undertale || global.hueshiftEnabled)){
         if (!surface_exists(global.sharedSurf)){
             global.sharedSurf = surface_create(800, 608);
@@ -122,7 +130,7 @@ if (view_yview &lt; 608 || global.roomSaveTo == 5){  // global.roomSaveTo check 
             //draw_clear_alpha(c_black, 1);
             
             shader_set(shdFinalBossBK);
-            shader_set_uniform_f(global.finalbossHandle, global.countPersistent * 0.0025);
+            shader_set_uniform_f(global.finalbossHandle, finalBackTime * 0.0025);
             shader_set_uniform_f(global.finalbossHandle2, 800, 608);
             texture_set_repeat(true);
             draw_rectangle(0, 0, 800, 608, false);
@@ -178,7 +186,7 @@ if (view_yview &lt; 608 || global.roomSaveTo == 5){  // global.roomSaveTo check 
                     _resetShader = true;
                 }
                 
-                draw_background_tiled(bkFinalScribbleFailsafe, 11 / max(view_wview/800, 0.01), (floor(0.875*global.countPersistent) - 12) mod 512);
+                draw_background_tiled(bkFinalScribbleFailsafe, 11 / max(view_wview/800, 0.01), (floor(0.875*finalBackTime) - 12) mod 512);
                 
                 if (_resetShader){
                     shader_reset();
@@ -215,9 +223,9 @@ if (view_yview &lt; 608 || global.roomSaveTo == 5){  // global.roomSaveTo check 
                         draw_rectangle(-800, -608, 1600, 1216, false);
                         draw_set_colour(c_white);
                         
-                        scrDrawTiledArea(bkFinalScribbleFailsafe, 0, -((floor(0.875*global.countPersistent) - (12 / max(view_hview/608, 0.01))) mod 512), 11 / max(view_wview/800, 0.01), view_yview, (view_xview + 11) + (778 / max(view_wview/800, 0.01)), view_yview + (282 / max(view_hview/608, 0.01)));
+                        scrDrawTiledArea(bkFinalScribbleFailsafe, 0, -((floor(0.875*finalBackTime) - (12 / max(view_hview/608, 0.01))) mod 512), 11 / max(view_wview/800, 0.01), view_yview, (view_xview + 11) + (778 / max(view_wview/800, 0.01)), view_yview + (282 / max(view_hview/608, 0.01)));
                     }else{
-                        scrDrawTiledArea(bkFinalScribbleFailsafe, 0,  ((floor(0.875*global.countPersistent) - (12 / max(view_hview/608, 0.01))) mod 512), max(x, view_xview) - 0.5*view_wview, view_yview - 0.5*view_hview, max(x, view_xview) + 1.5*view_wview, view_yview + 1.5*view_hview); 
+                        scrDrawTiledArea(bkFinalScribbleFailsafe, 0,  ((floor(0.875*finalBackTime) - (12 / max(view_hview/608, 0.01))) mod 512), max(x, view_xview) - 0.5*view_wview, view_yview - 0.5*view_hview, max(x, view_xview) + 1.5*view_wview, view_yview + 1.5*view_hview); 
                     }
                 }
             }

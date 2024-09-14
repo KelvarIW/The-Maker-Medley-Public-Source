@@ -728,7 +728,7 @@ draw_rectangle(menuLeft, menuTop, _backRectRight, menuBottom, false);
 // light blue
 draw_set_color(lblue);
 var _t = (menuTop + rowHeight);
-for (var i=0; i&lt;rowTotal; i+=2;){
+for (var i=0; i&lt;rowTotal-1; i+=2;){
     draw_rectangle(menuLeft, _t, _backRectRight, _t + (rowHeight-1), false);
     _t += 2*rowHeight;
 }

@@ -13,8 +13,8 @@ if (global.fmns){
     if (file_exists_fmns(global.configPath)){
         file_copy_fmns(global.configPath, global.configWorkingPath);
     }
-    ini_open(global.configWorkingPath);
 }
+ini_open(global.configWorkingPath);
 
 //general settings
 ini_write_real("Settings","Mute Music",global.muteMusic);
@@ -67,7 +67,6 @@ if (global.controllerEnabled)
     ini_write_real("Controller","Align_left",global.alignLeftButton[1]);
     ini_write_real("Controller","Align_right",global.alignRightButton[1]);
 }
-
 ini_close();
 
 if (global.fmns){

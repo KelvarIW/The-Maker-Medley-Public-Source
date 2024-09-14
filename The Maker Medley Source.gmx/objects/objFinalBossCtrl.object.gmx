@@ -25,10 +25,12 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>image_speed = 0;
+            <string>var _transferPhaseHP = true;
+image_speed = 0;
 autosave = false;
 roomNum = 0;
 counter = 0;
+//if (global.debugMode &amp;&amp; !instance_exists(objFinalBossHealthDebug)){instance_create(0, 0, objFinalBossHealthDebug);}
 
 switch (room){
     case rFinalBoss_1:
@@ -79,11 +81,12 @@ switch (room){
                 instance_create(x, -304, objFinalBossChar_4);
                 if (instance_exists(objFinalSudnepCtrl)){
                     with (objFinalBossChar_4){
-                        if (!global.challengeMode){
+                        //if (!global.challengeMode){  //?????
                             autosave = true;
-                        }
+                        //}
                         started = false;
                     }
+                    _transferPhaseHP = false;  // work around to keep BBlock Save BEFORE Ctrl Create Transfer
                 }else{
                     instance_destroy(objFinalSudnepArena);
                     
@@ -107,24 +110,32 @@ switch (room){
 }
 
 if (!global.practicing){ //when practicing, we use a different global variable for the hp
-    if (roomNum &gt;= 1){
-        global.finalBossHP[floor(roomNum)] = min(global.finalBossHP[floor(roomNum-1)], global.finalBossHPMax);
-    }else{
-        global.finalBossHP[0] = global.finalBossHPMax;
+    if (_transferPhaseHP){
+        if (roomNum &gt;= 1){
+            scrFinalTransferHP(roomNum, roomNum-1);
+        }else{
+            if (!buff()){
+                global.finalBossHP[0] = global.finalBossHPMax;
+            }else{
+                global.finalBossBuffHP[0] = global.finalBossBuffHPMax;
+            }
+        }
     }
 }
 
-if (!global.practicing || !((global.practiceWaypointStart == 1 &amp;&amp; room == rFinalBoss_1) || ((global.practiceWaypointStart == 3 || global.practiceWaypointStart == 4) &amp;&amp; room == rFinalBoss_2) || (global.practiceWaypointStart == 7 &amp;&amp; room == rFinalBoss_4))){
+var _kady = 1, _yoyoPat = 3, _yoyoPat_2 = 4, _sudnep = 7;
+if (!global.practicing || !((global.practiceWaypointStart == _kady &amp;&amp; room == rFinalBoss_1) || ((global.practiceWaypointStart == _yoyoPat || global.practiceWaypointStart == _yoyoPat_2) &amp;&amp; room == rFinalBoss_2) || (global.practiceWaypointStart == _sudnep &amp;&amp; room == rFinalBoss_4))){
     bar = -4;
     if (!instance_exists(objFinalBossHP) &amp;&amp; (!global.practicing || global.practiceWaypointStart &lt; 9)){
         bar = instance_create(0, 0, objFinalBossHP);
     }else{
-        bar = objFinalBossHP;
+        bar = objFinalBossHP; // so no bar?
     }
     
     with (objFinalBossHP){
         currentHPVal = other.roomNum;
     }
+    show_debug_message("HP Bar loaded for phase " + string(roomNum));
 }
 
 </string>

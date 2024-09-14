@@ -284,8 +284,9 @@ global.farthestRoom = max(global.farthestRoom, scrGetRoomNum(room));
 if (global.defaultBuffed){
     global.challengeMode = canBuff();
 }     
-scrSaveGame(true);
 
+// Save, then add Ctrl
+scrSaveGame(true);
 instance_create(x, y, objFinalBossCtrl); //(x, y) positioning is necessary for objFinalBossChar_1 to spawn in the correct position
 instance_destroy();
 </string>

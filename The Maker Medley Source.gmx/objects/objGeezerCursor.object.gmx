@@ -39,6 +39,7 @@ drawPFrame = 0;
 drawPScale = 1;
 delay = -1;
 
+timer = 0;
 hitchBGM = -4;
 hitchBGMTimer = 0;
 hitchBGMStarted = false;

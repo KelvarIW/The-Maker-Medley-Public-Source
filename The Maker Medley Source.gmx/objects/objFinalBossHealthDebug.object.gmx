@@ -4,7 +4,7 @@
   <solid>0</solid>
   <visible>-1</visible>
   <depth>0</depth>
-  <persistent>0</persistent>
+  <persistent>-1</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
@@ -28,9 +28,15 @@
             <string>draw_set_halign(fa_left);
 draw_set_valign(fa_top);
 draw_set_font(fDefault12);
+draw_text(32, 32, "Norm")
+draw_text(96, 32, "NormSave")
+draw_text(632, 64+48*(0), "Buff")
+draw_text(696, 64+48*(0), "BuffSave")
 for(i=0;i&lt;=5;i++){
-    draw_text(32, 32 + 48*i, string(global.finalBossHP[i]));
-    draw_text(96, 32 + 48*i, string(global.saveFinalBossHP[i]));
+    draw_text(32, 64 + 48*i, string(global.finalBossHP[i]));
+    draw_text(96, 64 + 48*i, string(global.saveFinalBossHP[i]));
+    draw_text(632, 64 + 48*(i), string(global.finalBossBuffHP[i]));
+    draw_text(696, 64 + 48*(i), string(global.saveFinalBossBuffHP[i]));
 }
 </string>
           </argument>

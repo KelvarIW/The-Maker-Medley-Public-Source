@@ -226,7 +226,12 @@ switch(timerEvent){
         if (room != rFinalBoss_4){
             persistent = true;
             with (objFinalBossHP){
+                /*
                 yPosLerp = 0;
+                yPos = -64;  // make hp disappear
+                */
+                //yPosLerp = 1; yPos = 64;
+                // don't change
                 persistent = true;
                 roomStart = rFinalBoss_4
             }
@@ -296,6 +301,7 @@ switch(timerEvent){
                 event_perform(ev_create, 0);
             }
         }
+        with (objFinalBossHP){ currentHPVal = 4; }  // objFinalBossCtrl Create sets to 5
         P4BlockCounter = 0;
         if (instance_exists(P4Block)){
             P4Block.y = room_height + 96;
@@ -592,9 +598,16 @@ if (timerEvent &gt;= 608.5 &amp;&amp; timerEvent &lt; 726.5 &amp;&amp; timerEven
             yprevious = y;
         }
         
+        // Autosave, add Ctrl (in that order)
+        if (!buff()){
+            scrTMM_Autosave(400, 464, 5);  // no autosave for buffed mode  &gt;:)
+        }//
+        scrFinalTransferHP(4, 3);  // transfer HP even without auto-save
+        
         if (!instance_exists(objFinalBossCtrl)){
             instance_create(400, -120, objFinalBossCtrl);
         }
+        
         _inst = instance_create(0, 0, objSingleJumpFlash);
         _inst.sprite_index = sprMakerDoubleStar;
         audio_play_sound(sndGainStar, 0, false);
@@ -614,9 +627,6 @@ if (timerEvent &gt;= 608.5 &amp;&amp; timerEvent &lt; 726.5 &amp;&amp; timerEven
         }
         persistent = false;
         
-        if (!buff()){
-            scrTMM_Autosave(400, 464, 5);  // no autosave for buffed mode  &gt;:)
-        }
         with (objMakerBossSave){
             instance_destroy();
         }

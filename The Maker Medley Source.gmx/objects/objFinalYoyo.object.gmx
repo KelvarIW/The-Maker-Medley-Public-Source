@@ -40,6 +40,8 @@ nametag = noone;
 fadeOut = false;
 alarm[0] = 1;
 //}
+image_speed = 0;
+transitionFreeze = false;
 </string>
           </argument>
         </arguments>
@@ -138,9 +140,10 @@ with (objFinalTilesAutomaticNoblock){
         instance_create((room_width-800) + 400, 256, objFinalPatCtrl);
         with (objFinalPatCtrl){
             active = true;
-            if (!global.challengeMode){
+            autosave = true;
+            /*if (!global.challengeMode){
                 autosave = true;
-            }
+            }*/
         }
             
     }
@@ -159,7 +162,7 @@ if (fadeOut){
 }
 scrFinalCalcGlowAlpha(0.05, 0.1);
 
-image_index = (global.count / 5);
+if (!transitionFreeze){  image_index = (global.count / 5);  }
 </string>
           </argument>
         </arguments>

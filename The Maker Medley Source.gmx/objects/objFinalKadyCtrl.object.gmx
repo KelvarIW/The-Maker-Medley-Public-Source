@@ -454,13 +454,17 @@ if (surface_exists(glowSurf)){
         instance_destroy();
     }
     if (instance_exists(objPlayer)){
-        if (!instance_exists(objFinalBossCtrl)){
-            instance_create(400, -120, objFinalBossCtrl);
-        }
+        // Autosave FIRST - then create objFinalBossCtrl
+        // Need to write Current values -&gt; Save values, then load from prev checkpoint
+        // Saved values represent HP at END of phase, Current values represent HP of current phase
+		
         if (!global.practicing){
-            global.finalBossHP[1] = global.finalBossHP[0];
+            //scrFinalTransferHP(1, 0);
             //Save in the location of the save point 
             scrTMM_Autosave(400, 279, 2);
+        }
+        if (!instance_exists(objFinalBossCtrl)){
+            instance_create(400, -120, objFinalBossCtrl);
         }
     }
 }

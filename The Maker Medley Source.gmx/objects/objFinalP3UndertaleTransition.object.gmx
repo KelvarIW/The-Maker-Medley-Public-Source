@@ -54,15 +54,15 @@ blackFade = -4;
 if (instance_exists(objFinalBossHP)){
     with (objFinalBossHP){yPosLerp = 1;}
 }
-if (!instance_exists(objFinalBossCtrl)){
-    instance_create(400, -120, objFinalBossCtrl);
-}
 
 if (!global.practicing){
-    global.finalBossHP[3] = global.finalBossHP[2];
+    //scrFinalTransferHP(3, 2);
     //Save in the location of the save point 
     scrTMM_Autosave(x, y, 4);
     scrFinalUpdateFarthest();
+}
+if (!instance_exists(objFinalBossCtrl)){
+    instance_create(400, -120, objFinalBossCtrl);
 }
 
 with (objFinalBossHP){

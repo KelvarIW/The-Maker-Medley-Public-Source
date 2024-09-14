@@ -3,8 +3,8 @@
   <Configs name="configs">
     <Config>Configs\Default</Config>
   </Configs>
-  <datafiles number="136" name="datafiles">
-    <datafiles number="136" name="Music">
+  <datafiles number="138" name="datafiles">
+    <datafiles number="138" name="Music">
       <datafile>
         <name>Title.ogg</name>
         <exists>-1</exists>
@@ -430,6 +430,40 @@
         </Config>
       </ConfigOptions>
       <filename>FileManager.dll</filename>
+    </datafile>
+    <datafile>
+      <name>FileManager.dylib</name>
+      <exists>-1</exists>
+      <size>157568</size>
+      <exportAction>2</exportAction>
+      <exportDir></exportDir>
+      <overwrite>0</overwrite>
+      <freeData>-1</freeData>
+      <removeEnd>0</removeEnd>
+      <store>0</store>
+      <ConfigOptions>
+        <Config name="Default">
+          <CopyToMask>9223372036854775807</CopyToMask>
+        </Config>
+      </ConfigOptions>
+      <filename>FileManager.dylib</filename>
+    </datafile>
+    <datafile>
+      <name>FileManager.so</name>
+      <exists>-1</exists>
+      <size>52900</size>
+      <exportAction>2</exportAction>
+      <exportDir></exportDir>
+      <overwrite>0</overwrite>
+      <freeData>-1</freeData>
+      <removeEnd>0</removeEnd>
+      <store>0</store>
+      <ConfigOptions>
+        <Config name="Default">
+          <CopyToMask>9223372036854775807</CopyToMask>
+        </Config>
+      </ConfigOptions>
+      <filename>FileManager.so</filename>
     </datafile>
   </datafiles>
   <NewExtensions>
@@ -1682,6 +1716,11 @@
           </scripts>
         </scripts>
         <scripts name="Final Boss">
+          <scripts name="HP handling">
+            <script>scripts\scrFinalDecHP.gml</script>
+            <script>scripts\scrFinalTransferHP.gml</script>
+            <script>scripts\scrFinalGetHP.gml</script>
+          </scripts>
           <script>scripts\scrFinalUpdateFarthest.gml</script>
           <script>scripts\scrFinalScribbleDamage.gml</script>
           <script>scripts\scrFinalCalcGlowAlpha.gml</script>

@@ -203,12 +203,7 @@ image_index = global.count*imgSpd;
             <string>///Iframe generousity
 if (iframes &gt; 0){
     iframes --;
-    var _hp;
-    if (global.practicing){
-        _hp = global.finalBossHPPracticeTemp;
-    }else{
-        _hp = global.finalBossHP[currentHPVal];
-    }
+    var _hp; _hp = scrFinalGetHP(currentHPVal);
     if (iframes &lt;= 0 &amp;&amp; storedHit &amp;&amp; _hp &gt; 1){
         scrFinalScribbleDamage();
     }

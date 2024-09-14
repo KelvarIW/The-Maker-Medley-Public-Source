@@ -35,7 +35,7 @@ yPosLerp = 0;
 descend = 1;
 roomStart = -4;
 image_alpha = 1;
-depth = -6;
+depth = -7;
 
 textCol1 = make_color_rgb( 0, 124, 225);
 textCol2 = make_color_rgb( 0, 64, 112);
@@ -87,12 +87,8 @@ if (surface_exists(surf2))
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>var _num = 0;
-if (global.practicing){
-    _num = global.finalBossHPPracticeTemp;
-}else{
-    _num = global.finalBossHP[currentHPVal];
-}
+            <string>var _num;
+_num = scrFinalGetHP(currentHPVal);
 
 if (shownHPPercentage &lt; 1){
     shownHPPercentage = min(shownHPPercentage+0.025, 1);
@@ -227,11 +223,7 @@ if (surface_exists(barSurf) &amp;&amp; image_alpha &gt; 0){
     draw_set_halign(fa_center);
     draw_set_valign(fa_middle);
     var _num = -1;
-    if (global.practicing){
-        _num = string(floor(global.finalBossHPPracticeTemp   * shownHPPercentage));
-    }else{
-        _num = string(floor(global.finalBossHP[currentHPVal] * shownHPPercentage));
-    }
+    _num = string(floor(scrFinalGetHP(currentHPVal)  * shownHPPercentage));
     
     if (_undertale == 1){
         if (!surface_exists(surf2))

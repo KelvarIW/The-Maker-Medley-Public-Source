@@ -56,7 +56,7 @@ if (object_index != objMakerBossSaveHard &amp;&amp; canBuff()){  // buffed saves
         _buffedSave = true;
     }else if (scrGetRoomNum(room) == scrGetRoomNum(rFinalBoss_1)){
         var _buffCheck = saveID;
-        show_debug_message("original saveID: " + string(saveID));
+        //show_debug_message("original saveID: " + string(saveID));
         if (saveID == 5){
             _buffCheck = 999;  // 5 = Sudnep; not in buffed mode
         }else if (saveID &gt; 5){

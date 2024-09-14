@@ -9,7 +9,7 @@ if (argument_count > 3){
 }
 
 var _saveID = argument[2];
-if (_override || (global.refightAutosave || global.autosave || global.farthestRoom <= scrGetRoomNum(room) || ((scrGetRoomNum(room) == scrGetRoomNum(rFinalBoss_1) && buff()) && _saveID > global.finalBossBuffCheckpoint))){
+if (_override || (global.refightAutosave || global.autosave || global.farthestRoom <= scrGetRoomNum(room) || (scrGetRoomNum(room) == scrGetRoomNum(rFinalBoss_1) && buff() && _saveID > global.finalBossBuffCheckpoint))){
     if (instance_exists(_player)){
         with (_player){
             var _oldX = x;

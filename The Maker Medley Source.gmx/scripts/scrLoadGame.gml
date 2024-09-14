@@ -255,6 +255,7 @@ for(var i=0; i<global.totalQuadCoins; i++){
 }
 for(var i=0; i<global.finalBossPhases; i++){
     global.finalBossHP[i] = global.saveFinalBossHP[i];
+    global.finalBossBuffHP[i] = global.saveFinalBossBuffHP[i];
 }
 global.gameClear = global.saveGameClear;
 
@@ -270,7 +271,8 @@ if (!global.gameStarted && !global.practicing){
     }
 }else{
     if (!room_exists(loadRoom)){
-        if (room == rFinalBoss_3){
+        var _roomTo = asset_get_index(global.saveRoom);
+        if (_roomTo == rFinalBoss_3){
             if (!instance_exists(objFinalP3Player)){
                 instance_create(0, 0, objFinalP3Player);
             }
@@ -285,7 +287,6 @@ if (!global.gameStarted && !global.practicing){
                 image_yscale = image_xscale;
             }
         }
-        var _roomTo = asset_get_index(global.saveRoom);
         if (room_exists(_roomTo)){
             room_goto(_roomTo);
             return (1);

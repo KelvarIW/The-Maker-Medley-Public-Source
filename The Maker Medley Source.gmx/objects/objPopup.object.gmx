@@ -174,9 +174,13 @@ if (keyboard_check_pressed(vk_escape) &amp;&amp; index != 0){
                         }
                         break;
                     case 3: //Delete Save
+                        var _ind = global.savenum;
                         scrWipeSaveFile(global.savenum);
                         var t_currentMusic = global.currentMusic;
+                        
                         scrInitializeGlobals();
+                        global.savenum = _ind;
+                        
                         global.currentMusic = t_currentMusic;
                         scrSaveGame(false);
                         with (objLoadGameMenu){
@@ -268,7 +272,7 @@ draw_sprite_ext(sprMakerSettingsBorderThin, 3, view_xview + (closeButtonX-6), vi
 draw_sprite_ext(sprMakerSettingsBorderThin, 1, view_xview + (closeButtonX-6), view_yview + y + (closeButtonY), 1, closeButtonH/8, 0, c_white, 1);
 draw_sprite_ext(sprMakerSettingsBorderThin, 2, view_xview + (closeButtonX-5), view_yview + y + (closeButtonY + (closeButtonH-3)), 1, 1, 0, c_white, 1);
 draw_sprite_ext(sprMakerSettingsBorderThin, 0, view_xview + (closeButtonX), view_yview + y + (closeButtonY + (closeButtonH-2)), closeButtonW/8, 1, 0, c_white, 1);
-draw_sprite_ext(sprMakerSettingsBorderThin, 4, view_xview + (closeButtonX + closeButtonW), view_yview + y + (closeButtonY + (closeButtonH-2)), 1, 1, 0, c_white, 1);
+draw_sprite_ext(sprMakerSettingsBorderThin, 4, view_xview + (closeButtonX + (closeButtonW-1)), view_yview + y + (closeButtonY + (closeButtonH-2)), 1, 1, 0, c_white, 1);
 
 //Buttons
 var t_buttonLInd, t_buttonRInd, t_buttonXInd;

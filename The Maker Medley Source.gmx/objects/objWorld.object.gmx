@@ -65,7 +65,7 @@ waterYOffset = 0;
 waterSineVal = 0;
 
 // Title
-titleSmallButtonY = 534;
+titleSmallButtonY = 532;
 titleCurMenu = 0;
 titleToMenu = 0;
 titleTotalButtons = 6;

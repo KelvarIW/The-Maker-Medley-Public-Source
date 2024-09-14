@@ -74,6 +74,8 @@ if (global.practicing){
         visible = true; //needed if we're starting from the third checkpoint
     }
 }
+
+transitionFreeze = false;
 </string>
           </argument>
         </arguments>
@@ -105,18 +107,19 @@ if (backScaleMult &lt; 1){
 }
 
 //cool hovering code by patrickgh3
-if (timer &gt;= 60){
-    y += yvel;
-    yvel += yaccel;
-    ycount += 1;
-    if (ycount == switchytime)
-    {
-        yaccel *= -1;
-        ycount = 0;
+if (!transitionFreeze){
+    if (timer &gt;= 60){
+        y += yvel;
+        yvel += yaccel;
+        ycount += 1;
+        if (ycount == switchytime)
+        {
+            yaccel *= -1;
+            ycount = 0;
+        }
     }
+    image_index = (global.count / 5);
 }
-
-image_index = (global.count / 5);
 </string>
           </argument>
         </arguments>
@@ -194,7 +197,9 @@ switch(timerEvent){
             fade = 1;
         }
         with (objFinalBossHP){
-            yPosLerp = 0;
+            yPosLerp = 1;
+            descend = 1;
+            shownHPPercentage = 1;
         }
         with (objFinalRNGDie){
             grow = true;
@@ -209,8 +214,11 @@ switch(timerEvent){
         }
         createIdent = true;
         if (autosave &amp;&amp; !global.practicing){
-            global.finalBossHP[2] = global.finalBossHP[1];
+            //scrFinalTransferHP(2, 1);
+            //Save in the location of the save point 
             scrTMM_Autosave(((room_width-800)+400), 535, 3);
+            scrFinalTransferHP(2, 1);
+            scrFinalUpdateFarthest();
         }
         
         if (buff()){
@@ -484,10 +492,16 @@ switch(timerEvent){
             }
             with (objBulletReflected){
                 speed = 0;
+                image_speed = 0;
                 gravity = 0;
                 alphaChange = 0;
             }
         }
+        
+        /*
+        with (object_index){transitionFreeze = true;}
+        with (objFinalYoyo){transitionFreeze = true;}
+        */
         break;
     case 861:
         with (objFakePlayer){
