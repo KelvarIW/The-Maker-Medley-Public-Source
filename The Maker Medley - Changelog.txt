@@ -68,3 +68,7 @@ Version 1.3.2:
 	- Fixed boss HP not saving for some final boss checkpoints in some circumstances
 	- Separate Buff and Normal Final boss HP in save files
 	- tweaked some GUI drawing to fix minor visual errors
+
+[12/6/24]
+Version 1.3.2.1:
+	- Fixed the final boss being unkillable after the prior update.
